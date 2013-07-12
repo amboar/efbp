@@ -91,4 +91,10 @@ public abstract class AbstractConsumer<I> extends AbstractNode
         Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
     }
+
+    @Override
+    public Collection<Packet<Void>> process(Iterable<Packet<I>> packets)
+    {
+        return Consumer.Utils.process(this, packets);
+    }
 }
