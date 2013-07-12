@@ -16,8 +16,11 @@ package au.id.aj.efbp.net;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import au.id.aj.efbp.data.Packet;
 
@@ -37,7 +40,7 @@ public interface Process<I, E>
      *
      * @return The processed packet.
      */
-    Packet<E> process(final Packet<I> packet);
+    Packet<E> process(final Packet<I> packet) throws ProcessingException;
 
     /**
      * Transforms multiple input packets to their output type.
@@ -51,6 +54,9 @@ public interface Process<I, E>
 
     public static final class Utils
     {
+        private static final Logger logger =
+            LoggerFactory.getLogger(Utils.class);
+
         private Utils()
         {
         }
@@ -73,7 +79,11 @@ public interface Process<I, E>
         {
             final List<Packet<E>> collection = new LinkedList<>();
             for (Packet<I> packet : packets) {
-                collection.add(worker.process(packet));
+                try {
+                    collection.add(worker.process(packet));
+                } catch (ProcessingException e) {
+                    logger.warn("{} dropped packet: {}", worker, packet);
+                }
             }
             return Collections.unmodifiableList(collection);
         }

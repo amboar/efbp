@@ -94,7 +94,7 @@ public class WorkerTest
     }
 
     @Test
-    public void processSingle()
+    public void processSingle() throws ProcessingException
     {
         final Worker<Object, Object> worker = new DummyWorker();
         final Packet<Object> packet = new DataPacket<>(new Object());

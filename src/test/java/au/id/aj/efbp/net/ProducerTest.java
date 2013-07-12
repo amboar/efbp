@@ -83,7 +83,7 @@ public class ProducerTest
     }
 
     @Test
-    public void processSingle()
+    public void processSingle() throws ProcessingException
     {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
