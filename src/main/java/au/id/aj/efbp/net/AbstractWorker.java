@@ -48,7 +48,7 @@ public abstract class AbstractWorker<I, E> extends AbstractNode
 
     protected final Ports<I> ports()
     {
-    	return this.ports;
+        return this.ports;
     }
 
     @Override
@@ -71,7 +71,7 @@ public abstract class AbstractWorker<I, E> extends AbstractNode
 
     protected final Taps<I> ingressTaps()
     {
-    	return this.ingressTaps;
+        return this.ingressTaps;
     }
 
     @Override
@@ -88,7 +88,7 @@ public abstract class AbstractWorker<I, E> extends AbstractNode
 
     protected final Taps<E> egressTaps()
     {
-    	return this.egressTaps;
+        return this.egressTaps;
     }
 
     @Override
@@ -99,7 +99,7 @@ public abstract class AbstractWorker<I, E> extends AbstractNode
 
     protected final Connections<E> connections()
     {
-    	return this.connections;
+        return this.connections;
     }
 
     @Override
@@ -129,6 +129,12 @@ public abstract class AbstractWorker<I, E> extends AbstractNode
             Ingress.Utils.ingress(this.ports, max);
         Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
+    }
+
+    @Override
+    public Collection<Packet<E>> process(Iterable<Packet<I>> packets)
+    {
+        return Process.Utils.process(this, packets);
     }
 
     @Override
