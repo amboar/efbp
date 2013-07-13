@@ -1,0 +1,16 @@
+* Add ability to plug and unplug Bootstrap's inbound queue. Required to prevent
+  pumping before priming has completed.
+* Add NetworkContext concept - nodes in the network can access the Network
+  instance
+* Extend on ability to stop the scheduler by allowing producers to direct the
+  network to stop and consumers to signal they've received the stop request.
+* Remove the need for Command processing boilerplate -
+  Abstract{Producer,Worker,Consumer} to implement
+
+        O process(I data) throws ProcessingException;
+
+  extracting data from the packet and calling if it's a data packet, or
+  instead, executing the command.
+* Implement CommandId.
+* Implement IoContext concept to make it easy to schedule distinct IO jobs that
+  should execute in serial order (eg, writing chunks of data to a file).
