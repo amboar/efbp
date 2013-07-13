@@ -18,21 +18,25 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.openide.util.Lookup;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
 import au.id.aj.efbp.util.Statistics;
 import au.id.aj.efbp.util.StopWatch;
 
-public class AbstractNode implements Node {
-
+public class AbstractNode implements Node
+{
     private final NodeId id;
     private final StopWatch stopwatch;
-    private Lookup lookup;
+    private final InstanceContent ic;
+    private final Lookup lookup;
 
     protected AbstractNode(final NodeId id, final Object... content)
     {
         this.id = id;
         this.stopwatch = new StopWatch();
-        this.lookup = Node.Utils.generateLookup(content);
+        this.ic = Node.Utils.generateInstanceContent(content);
+        this.lookup = new AbstractLookup(this.ic);
     }
 
     @Override
@@ -50,9 +54,14 @@ public class AbstractNode implements Node {
         return this.lookup;
     }
 
-    protected final void setLookup(final Lookup lookup)
+    protected void addContent(final Object content)
     {
-        this.lookup = lookup;
+        this.ic.add(content);
+    }
+
+    protected void removeContent(final Object content)
+    {
+        this.ic.remove(content);
     }
 
     @Override

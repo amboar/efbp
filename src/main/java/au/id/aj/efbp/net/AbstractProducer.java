@@ -17,9 +17,6 @@ package au.id.aj.efbp.net;
 import java.util.Collection;
 import java.util.Set;
 
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
-
 import au.id.aj.efbp.control.Controller;
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.ConnectionRegistry;
@@ -40,17 +37,14 @@ public abstract class AbstractProducer<E> extends AbstractNode
     private final Taps<E> ingressTaps;
     private final Taps<E> egressTaps;
     private final Connections<E> connections;
-    private final InstanceContent ic;
 
     protected AbstractProducer(final NodeId id, final Object... content)
     {
-        super(id);
+        super(id, content);
         this.inbound = new ConcurrentConnection<>();
         this.ingressTaps = new TapRegistry<>();
         this.egressTaps = new TapRegistry<>();
         this.connections = new ConnectionRegistry<>();
-        this.ic = Node.Utils.generateInstanceContent(content);
-        setLookup(new AbstractLookup(this.ic));
     }
 
     @Override
@@ -98,9 +92,9 @@ public abstract class AbstractProducer<E> extends AbstractNode
     }
 
     @Override
-    public final void control(final Controller commander)
+    public final void control(final Controller controller)
     {
-        this.ic.add(commander);
+        addContent(controller);
     }
 
     @Override
@@ -161,6 +155,6 @@ public abstract class AbstractProducer<E> extends AbstractNode
     @Override
     public void schedule(final Scheduler scheduler)
     {
-        this.ic.add(scheduler);
+        addContent(scheduler);
     }
 }
