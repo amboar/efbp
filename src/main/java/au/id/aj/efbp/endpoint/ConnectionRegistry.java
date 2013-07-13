@@ -19,9 +19,7 @@ import java.util.HashMap;
 
 import au.id.aj.efbp.transport.Outbound;
 
-public class ConnectionRegistry<E>
-    extends HashMap<Sink<E>, Collection<Outbound<E>>>
-    implements Connections<E>
-{
-	private static final long serialVersionUID = -3492076269831687096L;
+public class ConnectionRegistry<E> extends
+        HashMap<Sink<E>, Collection<Outbound<E>>> implements Connections<E> {
+    private static final long serialVersionUID = -3492076269831687096L;
 }

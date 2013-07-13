@@ -16,15 +16,15 @@ package au.id.aj.efbp.data;
 
 import au.id.aj.efbp.node.Node;
 
-
 /**
- * A container class for pushing data and metadata through the network. A
- * packet can optionally hold data of type T, and concurrently transport
- * multiple Command instances between nodes.
+ * A container class for pushing data and metadata through the network. A packet
+ * can optionally hold data of type T, and concurrently transport multiple
+ * Command instances between nodes.
  */
-public interface Packet<T>
-{
-    public enum Type { DATA, COMMAND };
+public interface Packet<T> {
+    public enum Type {
+        DATA, COMMAND
+    };
 
     Type type();
 

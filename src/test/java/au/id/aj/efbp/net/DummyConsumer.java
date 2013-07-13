@@ -19,16 +19,14 @@ import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.node.PliantNodeId;
 
-public class DummyConsumer<I> extends AbstractConsumer<I>
-{
+public class DummyConsumer<I> extends AbstractConsumer<I> {
     public static final String IN = "IN";
     public static final String DUMMY_IN = "DUMMY_IN";
-    public static final NodeId ID =
-        new PliantNodeId<String>(DummyConsumer.class.getSimpleName());
+    public static final NodeId ID = new PliantNodeId<String>(
+            DummyConsumer.class.getSimpleName());
 
-    public DummyConsumer()
-    {
-        super(ID, Sink.Utils.<I>generatePortMap(IN, DUMMY_IN));
+    public DummyConsumer() {
+        super(ID, Sink.Utils.<I> generatePortMap(IN, DUMMY_IN));
     }
 
     @Override

@@ -32,44 +32,43 @@ import au.id.aj.efbp.transport.Outbound;
  * typical users will probably be interested in the {@see Producer} interface
  * instead.
  */
-public interface Egress<E>
-{
+public interface Egress<E> {
     /**
-     * Egresses the packet to Ingress nodes registered via
-     * {@see #connect(Ingress<E>, String)}. Packet egress may be selective,
-     * i.e. not all registered Ingress instances may receive the packet. As
-     * such, the set of nodes to which the Packet<E> instance was egressed must
-     * be provided as the return value, which will in-turn instruct the
-     * scheduler which nodes are available for execution.
+     * Egresses the packet to Ingress nodes registered via {@see
+     * #connect(Ingress<E>, String)}. Packet egress may be selective, i.e. not
+     * all registered Ingress instances may receive the packet. As such, the set
+     * of nodes to which the Packet<E> instance was egressed must be provided as
+     * the return value, which will in-turn instruct the scheduler which nodes
+     * are available for execution.
      *
      * @param packet
-     *          The packet to emit to registered Ingress<E> instances.
+     *            The packet to emit to registered Ingress<E> instances.
      *
      * @return The set of nodes whose ingress queues were populated with the
-     * provided Packet<E>.
+     *         provided Packet<E>.
      */
     Set<Node> egress(final Packet<E> packet);
 
     /**
-     * Egresses multiple packets to registered Ingress instances.
-     * {@see #egress(Packet<E>)} contains a description of the requirements of
-     * the interface.
+     * Egresses multiple packets to registered Ingress instances. {@see
+     * #egress(Packet<E>)} contains a description of the requirements of the
+     * interface.
      */
     Set<Node> egress(final Collection<Packet<E>> packets);
 
     /**
-     * Any packets returned from {@see #ingress()} or
-     * {@see #ingress(final int * max)} will be placed into the queue during
-     * , providing a network tap-like capability for debugging. The
-     * implementation must track all queues passed to inspect, but not queue
-     * packets more than once for any provided reference.
+     * Any packets returned from {@see #ingress()} or {@see #ingress(final int *
+     * max)} will be placed into the queue during , providing a network tap-like
+     * capability for debugging. The implementation must track all queues passed
+     * to inspect, but not queue packets more than once for any provided
+     * reference.
      *
      * @param tap
-     *          The tap into which to place ingressed packets
+     *            The tap into which to place ingressed packets
      */
     void addEgressTap(final Tap<E> tap);
 
-    /**
+/**
      * Unregister the provided tap for monitory; the counterpart to
      * {@see #addEgressTap(final Queue<Packet<E>>). If the supplied
      * tap is not registered an IllegalStateException is thrown.
@@ -88,10 +87,8 @@ public interface Egress<E>
      * be boilerplate implementations in Egress definitions and consequently be
      * the go-to class for implementing the Egress interface.
      */
-    public static final class Utils
-    {
-        private Utils()
-        {
+    public static final class Utils {
+        private Utils() {
         }
 
         /**
@@ -99,21 +96,21 @@ public interface Egress<E>
          * registry.
          *
          * @param registry
-         *              The map of Ingress instances to queues maintained by
-         *              {@see #connect(final Connections<E> registry, final Ingress<E> remote, final String name)}
+         *            The map of Ingress instances to queues maintained by
+         *            {@see #connect(final Connections<E> registry, final
+         *            Ingress<E> remote, final String name)}
          *
          * @param packet
-         *              The packet to send to all registered Outbound connections.
+         *            The packet to send to all registered Outbound connections.
          *
          * @return The set of Ingress instances which must now be executed to
-         * process the egressed packet.
+         *         process the egressed packet.
          */
         public static <E> Set<Node> egress(final Connections<E> registry,
-                final Packet<E> packet)
-        {
+                final Packet<E> packet) {
             final Set<Node> triggered = new HashSet<>();
-            for (Map.Entry<Sink<E>, Collection<Outbound<E>>> e :
-                    registry.entrySet()) {
+            for (Map.Entry<Sink<E>, Collection<Outbound<E>>> e : registry
+                    .entrySet()) {
                 for (Outbound<E> o : e.getValue()) {
                     o.enqueue(packet);
                     triggered.add(e.getKey());
@@ -125,23 +122,22 @@ public interface Egress<E>
         /**
          * Egresses a collection of packets via the provided Egress
          * implementation. The purpose of this helper is to manage the returned
-         * node set across multiple
-         * {@see Egress.egress(final Collection<Outbound<E>> packet)} invocations.
+         * node set across multiple {@see Egress.egress(final
+         * Collection<Outbound<E>> packet)} invocations.
          *
          * @param egressor
-         *              An Egress implementation, upon which
-         *              {@see Egress.egress(final Collection<Packet<E>> packet)}
-         *              will be invoked.
+         *            An Egress implementation, upon which {@see
+         *            Egress.egress(final Collection<Packet<E>> packet)} will be
+         *            invoked.
          *
          * @param packets
-         *              The collection of packets to egress the node.
+         *            The collection of packets to egress the node.
          *
          * @return The set of Ingress instances which must now be executed to
-         * process the egressed packet.
+         *         process the egressed packet.
          */
         public static <E> Set<Node> egress(final Egress<E> egressor,
-                final Iterable<Packet<E>> packets)
-        {
+                final Iterable<Packet<E>> packets) {
             final Set<Node> triggered = new HashSet<>();
             for (Packet<E> packet : packets) {
                 triggered.addAll(egressor.egress(packet));
@@ -150,8 +146,7 @@ public interface Egress<E>
         }
 
         public static <E> Set<Node> egress(final Connections<E> registry,
-                final Iterable<Packet<E>> packets)
-        {
+                final Iterable<Packet<E>> packets) {
             final Set<Node> triggered = new HashSet<>();
             for (Packet<E> packet : packets) {
                 triggered.addAll(egress(registry, packet));

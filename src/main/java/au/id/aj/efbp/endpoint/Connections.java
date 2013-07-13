@@ -22,6 +22,5 @@ import au.id.aj.efbp.transport.Outbound;
 /**
  * An abstraction for connection management.
  */
-public interface Connections<E> extends Map<Sink<E>, Collection<Outbound<E>>>
-{
+public interface Connections<E> extends Map<Sink<E>, Collection<Outbound<E>>> {
 }

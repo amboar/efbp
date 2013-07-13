@@ -30,11 +30,10 @@ import au.id.aj.efbp.transport.Inbound;
  * Nodes implementing this interface accept packets from nodes implementing the
  * Egress interface. This is a low-level plumbing interface, typically users
  * will probably be interested in {@see Consumer} instead, though implementors
- * of consumers are advised to look through static methods available in
- * {@see #Ingress.Utils}.
+ * of consumers are advised to look through static methods available in {@see
+ * #Ingress.Utils}.
  */
-public interface Ingress<I>
-{
+public interface Ingress<I> {
 
     /**
      * Fetch packets from all ingress queues. Implementations may be selective;
@@ -42,29 +41,29 @@ public interface Ingress<I>
      * processed in the current scheduling cycle.
      *
      * @return The collection of packets to be processed in this scheduling
-     * cycle.
+     *         cycle.
      */
     Iterable<Packet<I>> ingress();
 
     /**
-     * Similar to {@see #ingress()}, but enforces a cap on the number of
-     * packets to ingress.
+     * Similar to {@see #ingress()}, but enforces a cap on the number of packets
+     * to ingress.
      */
     Iterable<Packet<I>> ingress(final int max);
 
     /**
-     * Any packets returned from {@see #ingress()} or
-     * {@see #ingress(final int * max)} will be placed into the queue during
-     * , providing a network tap-like capability for debugging. The
-     * implementation must track all queues passed to inspect, but not queue
-     * packets more than once for any provided reference.
+     * Any packets returned from {@see #ingress()} or {@see #ingress(final int *
+     * max)} will be placed into the queue during , providing a network tap-like
+     * capability for debugging. The implementation must track all queues passed
+     * to inspect, but not queue packets more than once for any provided
+     * reference.
      *
      * @param tap
-     *          The tap into which to place ingressed packets
+     *            The tap into which to place ingressed packets
      */
     void addIngressTap(final Tap<I> tap);
 
-    /**
+/**
      * Unregister the provided tap for monitory; the counterpart to
      * {@see #addIngressTap(final Queue<Packet<I>>). If the supplied
      * tap is not registered an IllegalStateException is thrown.
@@ -83,22 +82,18 @@ public interface Ingress<I>
      * be boilerplate implementations in Ingress definitions and consequently be
      * the go-to class for implementing the Ingress interface.
      */
-    public static final class Utils
-    {
-        private Utils()
-        {
+    public static final class Utils {
+        private Utils() {
         }
 
         public static <I> Collection<Packet<I>> drainFrom(
-                final Inbound<I> connection)
-        {
+                final Inbound<I> connection) {
             final Collection<Packet<I>> drainedPackets = new LinkedList<>();
             return drainFrom(connection, drainedPackets);
         }
 
-        public static <I> Collection<Packet<I>> drainFrom(final Inbound<I> from,
-                final Collection<Packet<I>> to)
-        {
+        public static <I> Collection<Packet<I>> drainFrom(
+                final Inbound<I> from, final Collection<Packet<I>> to) {
             for (Packet<I> packet : from) {
                 to.add(packet);
             }
@@ -110,27 +105,26 @@ public interface Ingress<I>
          * also removing the elements returned.
          *
          * @param connection
-         *              The connection from which to drain elements. Note that
-         *              any drained elements will no-longer be present in the
-         *              connection.
+         *            The connection from which to drain elements. Note that any
+         *            drained elements will no-longer be present in the
+         *            connection.
          *
          * @param max
-         *              The maximum number of elements to remove from connection
+         *            The maximum number of elements to remove from connection
          *
-         * @return A collection of all elements removed from connection. The size
-         * of the return collection is bounded by the max parameter.
+         * @return A collection of all elements removed from connection. The
+         *         size of the return collection is bounded by the max
+         *         parameter.
          */
         public static <I> Collection<Packet<I>> drainFrom(
-                final Inbound<I> connection, final int max)
-        {
+                final Inbound<I> connection, final int max) {
             final Collection<Packet<I>> drainedPackets = new LinkedList<>();
             return drainFrom(connection, drainedPackets, max);
         }
 
         public static <I> Collection<Packet<I>> drainFrom(
                 final Inbound<I> from, final Collection<Packet<I>> to,
-                final int max)
-        {
+                final int max) {
             final Iterator<Packet<I>> iter = from.iterator();
             int i = 0;
             while (i++ < max && iter.hasNext()) {
@@ -143,10 +137,8 @@ public interface Ingress<I>
             }
             return to;
         }
-        
 
-        public static <I> Collection<Packet<I>> ingress(final Ports<I> ports)
-        {
+        public static <I> Collection<Packet<I>> ingress(final Ports<I> ports) {
             // Naive implementation
             if (ports.isEmpty()) {
                 return Collections.emptyList();
@@ -159,8 +151,7 @@ public interface Ingress<I>
         }
 
         public static <I> Collection<Packet<I>> ingress(final Ports<I> ports,
-                final int max)
-        {
+                final int max) {
             // Naive implementation - possible queue starvation
             if (ports.isEmpty()) {
                 return Collections.emptyList();

@@ -21,30 +21,25 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import au.id.aj.efbp.data.Packet;
 
-public final class ConcurrentConnection<T> implements Connection<T>
-{
+public final class ConcurrentConnection<T> implements Connection<T> {
     private final Queue<Packet<T>> queue;
 
-    public ConcurrentConnection()
-    {
+    public ConcurrentConnection() {
         this.queue = new ConcurrentLinkedQueue<>();
     }
 
     @Override
-    public void enqueue(final Packet<T> packet)
-    {
+    public void enqueue(final Packet<T> packet) {
         this.queue.add(packet);
     }
 
     @Override
-    public void enqueue(final Collection<Packet<T>> packets)
-    {
+    public void enqueue(final Collection<Packet<T>> packets) {
         this.queue.addAll(packets);
     }
 
     @Override
-    public Iterator<Packet<T>> iterator()
-    {
+    public Iterator<Packet<T>> iterator() {
         return new Connection.DestructiveIterator<>(this.queue.iterator());
     }
 }

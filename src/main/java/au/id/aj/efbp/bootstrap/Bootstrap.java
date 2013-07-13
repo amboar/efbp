@@ -42,24 +42,21 @@ import au.id.aj.efbp.node.PliantNodeId;
  * input queue to its own output, feeding itself with the set of nodes N+1 which
  * is the result of executing the current set N.
  */
-public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>
-{
-    private static final Logger logger =
-        LoggerFactory.getLogger(Bootstrap.class);
+public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node> {
+    private static final Logger logger = LoggerFactory
+            .getLogger(Bootstrap.class);
 
     public static final String IN = "IN";
-    public static final NodeId ID =
-        new PliantNodeId<String>("__" + Bootstrap.class.getSimpleName());
+    public static final NodeId ID = new PliantNodeId<String>("__"
+            + Bootstrap.class.getSimpleName());
 
     private final Runnable job;
     private final ExecutorService executors;
 
-    public Bootstrap(final int poolSize)
-    {
-        super(ID, Sink.Utils.<Node>generatePortMap(IN), new Control());
+    public Bootstrap(final int poolSize) {
+        super(ID, Sink.Utils.<Node> generatePortMap(IN), new Control());
         this.executors = Executors.newFixedThreadPool(poolSize);
-        this.job = new Runnable()
-        {
+        this.job = new Runnable() {
             @Override
             public void run() {
                 Thread.currentThread().setName(ID.toString());
@@ -72,8 +69,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>
     }
 
     @Override
-    public final void inject(final Packet<Node> packet)
-    {
+    public final void inject(final Packet<Node> packet) {
         if (getLookup().lookup(Control.class).shouldStop()) {
             logger.info("Halting network");
             return;
@@ -85,8 +81,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>
     }
 
     @Override
-    public final void inject(final Collection<Packet<Node>> packets)
-    {
+    public final void inject(final Collection<Packet<Node>> packets) {
         if (getLookup().lookup(Control.class).shouldStop()) {
             logger.info("Halting network");
             return;
@@ -101,8 +96,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>
         logger.info("Queued nodes and scheduled Bootstrap");
     }
 
-    private void processData(final Node node)
-    {
+    private void processData(final Node node) {
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -123,8 +117,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>
     }
 
     @Override
-    public Packet<Void> process(final Packet<Node> packet)
-    {
+    public Packet<Void> process(final Packet<Node> packet) {
         switch (packet.type()) {
         case COMMAND:
             logger.info("Processing command packet: {}", packet);
@@ -139,35 +132,29 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>
     }
 
     @Override
-    public Collection<Packet<Void>> process(final Iterable<Packet<Node>> packets)
-    {
+    public Collection<Packet<Void>> process(final Iterable<Packet<Node>> packets) {
         logger.info("Processing packets: {}", packets);
         Process.Utils.process(this, packets);
         return Collections.emptySet();
     }
 
-    public void awaitTermination() throws InterruptedException
-    {
+    public void awaitTermination() throws InterruptedException {
         getLookup().lookup(Control.class).hasStopped();
     }
 
-    public static class Control
-    {
+    public static class Control {
         private boolean stop = false;
 
-        public synchronized boolean shouldStop()
-        {
+        public synchronized boolean shouldStop() {
             return this.stop;
         }
 
-        public synchronized void stop()
-        {
+        public synchronized void stop() {
             this.stop = true;
             notifyAll();
         }
 
-        public synchronized void hasStopped() throws InterruptedException
-        {
+        public synchronized void hasStopped() throws InterruptedException {
             if (this.stop) {
                 return;
             }
@@ -175,18 +162,15 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>
         }
     }
 
-    public static class StopCommand extends AbstractCommand
-    {
+    public static class StopCommand extends AbstractCommand {
         private static final long serialVersionUID = 1341221514588307327L;
 
-        public StopCommand(final CommandId id)
-        {
+        public StopCommand(final CommandId id) {
             super(id, Bootstrap.ID);
         }
 
         @Override
-        public void execute(Node node)
-        {
+        public void execute(Node node) {
             final Control control = node.getLookup().lookup(Control.class);
             if (null == control) {
                 logger.error("Control lookup cannot be null");

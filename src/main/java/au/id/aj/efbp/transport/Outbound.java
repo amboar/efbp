@@ -23,16 +23,16 @@ import au.id.aj.efbp.data.Packet;
  * for type-safety a varargs enqueue interface has not been specified due to
  * possible heap pollution[1].
  *
- * [1] http://docs.oracle.com/javase/tutorial/java/generics/nonReifiableVarargsType.html#heap_pollution
+ * [1] http://docs.oracle.com/javase/tutorial/java/generics/
+ * nonReifiableVarargsType.html#heap_pollution
  */
-public interface Outbound<T>
-{
+public interface Outbound<T> {
     /**
      * Makes Packets available to the consumer ({@see Inbound}) of the
      * connection.
      *
      * @param packet
-     *          The packet to send across the connection
+     *            The packet to send across the connection
      */
     void enqueue(final Packet<T> packet);
 
@@ -41,7 +41,7 @@ public interface Outbound<T>
      * connection.
      *
      * @param packets
-     *          The collection of packets to send across the connection
+     *            The collection of packets to send across the connection
      */
     void enqueue(final Collection<Packet<T>> packets);
 }

@@ -19,25 +19,22 @@ import java.util.List;
 
 import au.id.aj.efbp.data.Packet;
 
-public class DefaultTap<I> extends LinkedList<Packet<I>> implements Tap<I>, Comparable<List<Packet<I>>>
-{
+public class DefaultTap<I> extends LinkedList<Packet<I>> implements Tap<I>,
+        Comparable<List<Packet<I>>> {
     private static final long serialVersionUID = 1479818015740106119L;
 
     @Override
-    public boolean equals(final Object o)
-    {
+    public boolean equals(final Object o) {
         return this == o;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return System.identityHashCode(this);
     }
 
     @Override
-    public int compareTo(List<Packet<I>> o)
-    {
+    public int compareTo(List<Packet<I>> o) {
         final int value = hashCode() - o.hashCode();
         if (0 == value) {
             System.out.println("Hash subtraction was zero");

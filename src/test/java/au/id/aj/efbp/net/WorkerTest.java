@@ -33,22 +33,19 @@ import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.transport.Outbound;
 
 @RunWith(JUnit4.class)
-public class WorkerTest
-{
+public class WorkerTest {
     @Test
-    public void transformFilledCollection()
-    {
+    public void transformFilledCollection() {
         final Process<Object, Object> worker = new DummyWorker();
         final Collection<Packet<Object>> source = new LinkedList<>();
         source.add(new DataPacket<Object>(new Object()));
-        final Collection<Packet<Object>> transformed =
-            Process.Utils.process(worker, source);
+        final Collection<Packet<Object>> transformed = Process.Utils.process(
+                worker, source);
         assertTrue(transformed.containsAll(source));
     }
 
     @Test
-    public void workerIngressSingle()
-    {
+    public void workerIngressSingle() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Outbound<Object> connection = worker.port(DummyWorker.IN);
         final Packet<Object> packet = new DataPacket<>(new Object());
@@ -60,16 +57,14 @@ public class WorkerTest
     }
 
     @Test
-    public void workerIngressMultiple()
-    {
+    public void workerIngressMultiple() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Outbound<Object> connection = worker.port(DummyWorker.IN);
         final List<Packet<Object>> packets = new ArrayList<>(2);
         packets.add(new DataPacket<>(new Object()));
         packets.add(new DataPacket<>(new Object()));
         connection.enqueue(packets);
-        final Iterator<Packet<Object>> ingressed =
-            worker.ingress().iterator();
+        final Iterator<Packet<Object>> ingressed = worker.ingress().iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packets.get(0), ingressed.next());
         assertTrue(ingressed.hasNext());
@@ -78,32 +73,28 @@ public class WorkerTest
     }
 
     @Test
-    public void workerIngressLimited()
-    {
+    public void workerIngressLimited() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Outbound<Object> connection = worker.port(DummyWorker.IN);
         final List<Packet<Object>> packets = new ArrayList<>(2);
         packets.add(new DataPacket<>(new Object()));
         packets.add(new DataPacket<>(new Object()));
         connection.enqueue(packets);
-        final Iterator<Packet<Object>> ingressed =
-            worker.ingress(1).iterator();
+        final Iterator<Packet<Object>> ingressed = worker.ingress(1).iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packets.get(0), ingressed.next());
         assertTrue(!ingressed.hasNext());
     }
 
     @Test
-    public void processSingle() throws ProcessingException
-    {
+    public void processSingle() throws ProcessingException {
         final Worker<Object, Object> worker = new DummyWorker();
         final Packet<Object> packet = new DataPacket<>(new Object());
         assertEquals(packet, worker.process(packet));
     }
 
     @Test
-    public void processMultiple()
-    {
+    public void processMultiple() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Collection<Packet<Object>> packets = new LinkedList<>();
         packets.add(new DataPacket<>(new Object()));
@@ -113,24 +104,22 @@ public class WorkerTest
     }
 
     @Test
-    public void workerEgressSingle()
-    {
+    public void workerEgressSingle() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Consumer<Object> consumer = new DummyConsumer<>();
         worker.connect(consumer, DummyConsumer.IN);
         final Packet<Object> packet = new DataPacket<>(new Object());
         final Collection<Node> execute = worker.egress(packet);
         assertTrue(execute.contains(consumer));
-        final Iterator<Packet<Object>> ingressed =
-            consumer.ingress().iterator();
+        final Iterator<Packet<Object>> ingressed = consumer.ingress()
+                .iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packet, ingressed.next());
         assertTrue(!ingressed.hasNext());
     }
 
     @Test
-    public void workerEgressMultiple()
-    {
+    public void workerEgressMultiple() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Consumer<Object> consumer = new DummyConsumer<>();
         worker.connect(consumer, DummyConsumer.IN);
@@ -139,8 +128,8 @@ public class WorkerTest
         packets.add(new DataPacket<>(new Object()));
         final Collection<Node> execute = worker.egress(packets);
         assertTrue(execute.contains(consumer));
-        final Iterator<Packet<Object>> ingressed =
-            consumer.ingress().iterator();
+        final Iterator<Packet<Object>> ingressed = consumer.ingress()
+                .iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packets.get(0), ingressed.next());
         assertTrue(ingressed.hasNext());
@@ -149,8 +138,7 @@ public class WorkerTest
     }
 
     @Test
-    public void addIngressTap()
-    {
+    public void addIngressTap() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Outbound<Object> connection = worker.port(DummyWorker.IN);
         final Tap<Object> tap = new DefaultTap<>();
@@ -163,8 +151,7 @@ public class WorkerTest
     }
 
     @Test
-    public void removeIngressTap()
-    {
+    public void removeIngressTap() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Outbound<Object> connection = worker.port(DummyWorker.IN);
         final Tap<Object> tap = new DefaultTap<>();
@@ -182,8 +169,7 @@ public class WorkerTest
     }
 
     @Test
-    public void addEgressTap()
-    {
+    public void addEgressTap() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Outbound<Object> connection = worker.port(DummyWorker.IN);
         final Tap<Object> tap = new DefaultTap<>();
@@ -197,8 +183,7 @@ public class WorkerTest
     }
 
     @Test
-    public void removeEgressTap()
-    {
+    public void removeEgressTap() {
         final Worker<Object, Object> worker = new DummyWorker();
         final Outbound<Object> connection = worker.port(DummyWorker.IN);
         final Tap<Object> tap = new DefaultTap<>();

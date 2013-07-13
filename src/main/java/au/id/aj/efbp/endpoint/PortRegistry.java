@@ -19,18 +19,15 @@ import java.util.Map;
 
 import au.id.aj.efbp.transport.Connection;
 
-public class PortRegistry<I> extends HashMap<String, Connection<I>>
-    implements Ports<I>
-{
-	private static final long serialVersionUID = -6441431379164226044L;
+public class PortRegistry<I> extends HashMap<String, Connection<I>> implements
+        Ports<I> {
+    private static final long serialVersionUID = -6441431379164226044L;
 
-	public PortRegistry()
-    {
+    public PortRegistry() {
         super();
     }
 
-    public PortRegistry(Map<String, Connection<I>> m)
-    {
+    public PortRegistry(Map<String, Connection<I>> m) {
         super(m);
     }
 }

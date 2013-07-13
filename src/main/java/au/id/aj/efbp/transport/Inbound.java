@@ -18,9 +18,8 @@ import au.id.aj.efbp.data.Packet;
 
 /**
  * Provide methods relating to consumption of in-bound Packets. Note that the
- * iterator implementation is expected to be destructive, i.e. iteration
- * removes elements from the underlying collection.
+ * iterator implementation is expected to be destructive, i.e. iteration removes
+ * elements from the underlying collection.
  */
-public interface Inbound<T> extends Iterable<Packet<T>>
-{
+public interface Inbound<T> extends Iterable<Packet<T>> {
 }

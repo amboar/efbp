@@ -30,49 +30,44 @@ import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.transport.Connection;
 
 @RunWith(JUnit4.class)
-public class SinkTest
-{
+public class SinkTest {
     @Test
-    public void generateOnePortVarargs()
-    {
+    public void generateOnePortVarargs() {
         final String name = "IN";
-        final Map<String, Connection<Object>> portMap =
-            Sink.Utils.<Object>generatePortMap(name);
+        final Map<String, Connection<Object>> portMap = Sink.Utils
+                .<Object> generatePortMap(name);
         assertTrue(portMap.keySet().contains(name));
         assertEquals(1, portMap.keySet().size());
     }
 
     @Test
-    public void generateTwoPortsVarargs()
-    {
+    public void generateTwoPortsVarargs() {
         final String in1 = "IN1";
         final String in2 = "IN2";
-        final Map<String, Connection<Object>> portMap =
-            Sink.Utils.<Object>generatePortMap(in1, in2);
+        final Map<String, Connection<Object>> portMap = Sink.Utils
+                .<Object> generatePortMap(in1, in2);
         assertTrue(portMap.keySet().contains(in1));
         assertTrue(portMap.keySet().contains(in2));
         assertEquals(2, portMap.keySet().size());
     }
 
     @Test
-    public void generateOnePortCollection()
-    {
+    public void generateOnePortCollection() {
         final String name = "IN";
-        final Map<String, Connection<Object>> portMap =
-            Sink.Utils.<Object>generatePortMap(Collections.singleton(name));
+        final Map<String, Connection<Object>> portMap = Sink.Utils
+                .<Object> generatePortMap(Collections.singleton(name));
         assertTrue(portMap.keySet().contains(name));
         assertEquals(1, portMap.keySet().size());
 
     }
 
     @Test
-    public void generateTwoPortsCollection()
-    {
+    public void generateTwoPortsCollection() {
         final Set<String> names = new HashSet<>();
         names.add("IN1");
         names.add("IN2");
-        final Map<String, Connection<Object>> portMap =
-            Sink.Utils.<Object>generatePortMap(names);
+        final Map<String, Connection<Object>> portMap = Sink.Utils
+                .<Object> generatePortMap(names);
         assertTrue(portMap.keySet().containsAll(names));
         assertEquals(2, portMap.keySet().size());
     }

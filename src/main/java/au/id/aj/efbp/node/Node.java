@@ -30,11 +30,10 @@ import au.id.aj.efbp.util.Statistics;
  * Nodes must be uniquely identified in the network for debugging purposes,
  * where the id of the node can be fetched through the {@see #id()} call.
  */
-public interface Node extends Lookup.Provider
-{
+public interface Node extends Lookup.Provider {
     /**
-     * Transform packets, optionally receiving and sending them depending on
-     * the implementation.
+     * Transform packets, optionally receiving and sending them depending on the
+     * implementation.
      */
     Set<Node> execute();
 
@@ -42,7 +41,7 @@ public interface Node extends Lookup.Provider
      * Process at most max packets in the vein of {@see #execute()}.
      *
      * @param max
-     *          The maximum number of packets to receive, transform or send.
+     *            The maximum number of packets to receive, transform or send.
      */
     Set<Node> execute(final int max);
 
@@ -60,19 +59,16 @@ public interface Node extends Lookup.Provider
      * scheduler with this information.
      *
      * @return A NodeStatistics instance containing metrics on packet
-     * processing.
+     *         processing.
      */
     Statistics reportStatistics();
 
-    public static final class Utils
-    {
-        private Utils()
-        {
+    public static final class Utils {
+        private Utils() {
         }
 
         public static InstanceContent generateInstanceContent(
-                final Object... content)
-        {
+                final Object... content) {
             final InstanceContent ic = new InstanceContent();
             for (Object o : content) {
                 ic.add(o);
@@ -80,8 +76,7 @@ public interface Node extends Lookup.Provider
             return ic;
         }
 
-        public static Lookup generateLookup(final Object... content)
-        {
+        public static Lookup generateLookup(final Object... content) {
             return new AbstractLookup(generateInstanceContent(content));
         }
     }

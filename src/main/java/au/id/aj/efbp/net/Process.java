@@ -28,15 +28,14 @@ import au.id.aj.efbp.data.Packet;
  * A Worker implements the full Ingress and Egress process and provides a
  * mechanism for transfoming ingressed data before it egresses.
  */
-public interface Process<I, E>
-{
+public interface Process<I, E> {
     /**
      * Transforms a packet from one type to another. The types do not
-     * necessarily have to be different; arbitrary manipulations of the data
-     * can be carried out.
+     * necessarily have to be different; arbitrary manipulations of the data can
+     * be carried out.
      *
      * @param packet
-     *          The inbound packet to process
+     *            The inbound packet to process
      *
      * @return The processed packet.
      */
@@ -46,19 +45,17 @@ public interface Process<I, E>
      * Transforms multiple input packets to their output type.
      *
      * @param packets
-     *          The collection of packets to process
+     *            The collection of packets to process
      *
      * @return The collection of processed packets
      */
     Collection<Packet<E>> process(final Iterable<Packet<I>> packets);
 
-    public static final class Utils
-    {
-        private static final Logger logger =
-            LoggerFactory.getLogger(Utils.class);
+    public static final class Utils {
+        private static final Logger logger = LoggerFactory
+                .getLogger(Utils.class);
 
-        private Utils()
-        {
+        private Utils() {
         }
 
         /**
@@ -66,17 +63,16 @@ public interface Process<I, E>
          * collection.
          *
          * @param worker
-         *              The Worker implementation on which to invoke the
-         *              single-packet transform method.
+         *            The Worker implementation on which to invoke the
+         *            single-packet transform method.
          *
          * @param packets
-         *              The packets to process
+         *            The packets to process
          *
-         * @return 
+         * @return
          */
         public static <I, E> Collection<Packet<E>> process(
-                final Process<I, E> worker, final Iterable<Packet<I>> packets)
-        {
+                final Process<I, E> worker, final Iterable<Packet<I>> packets) {
             final List<Packet<E>> collection = new LinkedList<>();
             for (Packet<I> packet : packets) {
                 try {

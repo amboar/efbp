@@ -1,7 +1,6 @@
 package au.id.aj.efbp.net;
 
-public class ProcessingException extends Exception
-{
+public class ProcessingException extends Exception {
     private static final long serialVersionUID = 2985124723334087068L;
 
     public ProcessingException() {

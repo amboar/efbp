@@ -18,6 +18,5 @@ import java.util.Map;
 
 import au.id.aj.efbp.transport.Connection;
 
-public interface Ports<I> extends Map<String, Connection<I>>
-{
+public interface Ports<I> extends Map<String, Connection<I>> {
 }

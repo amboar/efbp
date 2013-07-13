@@ -29,11 +29,9 @@ import au.id.aj.efbp.net.Consumer;
 import au.id.aj.efbp.net.DummyConsumer;
 
 @RunWith(JUnit4.class)
-public class SourceTest
-{
+public class SourceTest {
     @Test
-    public void connectOne()
-    {
+    public void connectOne() {
         final Connections<Object> connections = new ConnectionRegistry<>();
         final Sink<Object> ingress = new DummyConsumer<>();
         Source.Utils.connect(connections, ingress, DummyConsumer.IN);
@@ -42,8 +40,7 @@ public class SourceTest
     }
 
     @Test
-    public void connectTwo()
-    {
+    public void connectTwo() {
         final Connections<Object> connections = new ConnectionRegistry<>();
         final Consumer<Object> i1 = new DummyConsumer<>();
         Source.Utils.connect(connections, i1, DummyConsumer.IN);
@@ -54,8 +51,7 @@ public class SourceTest
     }
 
     @Test
-    public void connectBoth()
-    {
+    public void connectBoth() {
         final Connections<Object> connections = new ConnectionRegistry<>();
         final Consumer<Object> ingress = new DummyConsumer<>();
         Source.Utils.connect(connections, ingress, DummyConsumer.IN);

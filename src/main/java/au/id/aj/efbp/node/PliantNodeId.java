@@ -14,31 +14,25 @@
  */
 package au.id.aj.efbp.node;
 
-
-public class PliantNodeId<T> implements NodeId
-{
+public class PliantNodeId<T> implements NodeId {
     private final T id;
 
-    public PliantNodeId(final T id)
-    {
+    public PliantNodeId(final T id) {
         this.id = id;
     }
 
     @Override
-    public boolean equals(final Object o)
-    {
+    public boolean equals(final Object o) {
         return this.id.equals(o);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return this.id.hashCode();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return this.id.toString();
     }
 }

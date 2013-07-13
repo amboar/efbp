@@ -19,25 +19,22 @@ import java.util.Set;
 
 import au.id.aj.efbp.data.Packet;
 
-public interface Taps<I> extends Set<Tap<I>>
-{
-    public static final class Utils
-    {
-        private Utils()
-        {
+public interface Taps<I> extends Set<Tap<I>> {
+    public static final class Utils {
+        private Utils() {
         }
 
         /**
          * Copy a collection of packets to a collection of inspection queues.
          *
          * @param inspectors
-         *              The inspection queues onto which to place packets
+         *            The inspection queues onto which to place packets
          *
          * @param packet
-         *              The packet to place on the inspection queues
+         *            The packet to place on the inspection queues
          */
-        public static <I> void acquiesce(final Taps<I> taps, final Packet<I> packet)
-        {
+        public static <I> void acquiesce(final Taps<I> taps,
+                final Packet<I> packet) {
             for (Tap<I> tap : taps) {
                 tap.add(packet);
             }
@@ -47,14 +44,13 @@ public interface Taps<I> extends Set<Tap<I>>
          * Copy a collection of packets to a collection of inspection queues.
          *
          * @param inspectors
-         *              The inspection queues onto which to place packets
+         *            The inspection queues onto which to place packets
          *
          * @param packets
-         *              The packets to place on the inspection queues
+         *            The packets to place on the inspection queues
          */
         public static <I> void acquiesce(final Taps<I> taps,
-                final Collection<Packet<I>> packets)
-        {
+                final Collection<Packet<I>> packets) {
             for (Tap<I> tap : taps) {
                 tap.addAll(packets);
             }

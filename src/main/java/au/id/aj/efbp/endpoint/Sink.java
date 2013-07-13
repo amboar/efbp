@@ -24,37 +24,32 @@ import au.id.aj.efbp.transport.ConcurrentConnection;
 import au.id.aj.efbp.transport.Connection;
 import au.id.aj.efbp.transport.Outbound;
 
-public interface Sink<I> extends Node
-{
+public interface Sink<I> extends Node {
     /**
-     * Retrieves a specific ingress queue given its name. Typically
-     * {@see #port(String)} will be used by the
-     * {@see Egress#connect(Ingress<E, ?>, String)} implementation for
-     * connecting Ingress and Egress instances together.
+     * Retrieves a specific ingress queue given its name. Typically {@see
+     * #port(String)} will be used by the {@see Egress#connect(Ingress<E, ?>,
+     * String)} implementation for connecting Ingress and Egress instances
+     * together.
      *
      * @param name
-     *          The name of the Ingress queue to return
+     *            The name of the Ingress queue to return
      *
      * @return The ingress queue
      */
     Outbound<I> port(final String name);
 
-    public static final class Utils
-    {
-        private Utils()
-        {
+    public static final class Utils {
+        private Utils() {
         }
 
         /**
          * Generate a port map through varargs names.
          *
-         * @return names
-         *              A varargs container of port names
+         * @return names A varargs container of port names
          *
          * @return An unmodifiable port map.
          */
-        public static <I> Ports<I> generatePortMap(final String... names)
-        {
+        public static <I> Ports<I> generatePortMap(final String... names) {
             final Map<String, Connection<I>> portMap = new HashMap<>();
             for (final String name : names) {
                 portMap.put(name, new ConcurrentConnection<I>());
@@ -65,13 +60,12 @@ public interface Sink<I> extends Node
         /**
          * Generate a port map through a collection of names.
          *
-         * @return names
-         *              A collection of port names
+         * @return names A collection of port names
          *
          * @return An unmodifiable port map.
          */
-        public static <I> Ports<I> generatePortMap(final Collection<String> names)
-        {
+        public static <I> Ports<I> generatePortMap(
+                final Collection<String> names) {
             final Map<String, Connection<I>> portMap = new HashMap<>();
             for (final String name : names) {
                 portMap.put(name, new ConcurrentConnection<I>());

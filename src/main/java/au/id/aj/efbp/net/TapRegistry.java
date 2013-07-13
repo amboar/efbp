@@ -16,9 +16,7 @@ package au.id.aj.efbp.net;
 
 import java.util.concurrent.ConcurrentSkipListSet;
 
-public class TapRegistry<I>
-    extends ConcurrentSkipListSet<Tap<I>>
-    implements Taps<I>
-{
-	private static final long serialVersionUID = -2349228041136161660L;
+public class TapRegistry<I> extends ConcurrentSkipListSet<Tap<I>> implements
+        Taps<I> {
+    private static final long serialVersionUID = -2349228041136161660L;
 }

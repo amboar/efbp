@@ -32,18 +32,15 @@ import au.id.aj.efbp.transport.Connection;
 import au.id.aj.efbp.transport.Outbound;
 
 @RunWith(JUnit4.class)
-public class ConcurrentConnectionTest
-{
+public class ConcurrentConnectionTest {
     @Test
-    public void enqueueSingle()
-    {
+    public void enqueueSingle() {
         final Outbound<Object> outbound = new ConcurrentConnection<>();
         outbound.enqueue(new DataPacket<Object>(new Object()));
     }
 
     @Test
-    public void enqueueCollection()
-    {
+    public void enqueueCollection() {
         final Outbound<Object> outbound = new ConcurrentConnection<>();
         final Collection<Packet<Object>> collection = new LinkedList<>();
         collection.add(new DataPacket<Object>(new Object()));
@@ -52,8 +49,7 @@ public class ConcurrentConnectionTest
     }
 
     @Test
-    public void consumeSingle()
-    {
+    public void consumeSingle() {
         final Connection<Object> connection = new ConcurrentConnection<>();
         final Packet<Object> p = new DataPacket<>(new Object());
         connection.enqueue(p);
@@ -66,8 +62,7 @@ public class ConcurrentConnectionTest
     }
 
     @Test
-    public void consumeMultiple()
-    {
+    public void consumeMultiple() {
         final Connection<Object> connection = new ConcurrentConnection<>();
         final Collection<Packet<Object>> collection = new LinkedList<>();
         collection.add(new DataPacket<Object>(new Object()));

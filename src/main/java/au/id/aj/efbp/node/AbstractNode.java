@@ -23,15 +23,13 @@ import org.openide.util.lookup.InstanceContent;
 import au.id.aj.efbp.util.Statistics;
 import au.id.aj.efbp.util.StopWatch;
 
-public abstract class AbstractNode implements Node
-{
+public abstract class AbstractNode implements Node {
     private final NodeId id;
     private final StopWatch stopwatch;
     private final InstanceContent ic;
     private final Lookup lookup;
 
-    protected AbstractNode(final NodeId id, final Object... content)
-    {
+    protected AbstractNode(final NodeId id, final Object... content) {
         this.id = id;
         this.stopwatch = new StopWatch();
         this.ic = Node.Utils.generateInstanceContent(content);
@@ -53,13 +51,11 @@ public abstract class AbstractNode implements Node
         return this.lookup;
     }
 
-    protected void addContent(final Object content)
-    {
+    protected void addContent(final Object content) {
         this.ic.add(content);
     }
 
-    protected void removeContent(final Object content)
-    {
+    protected void removeContent(final Object content) {
         this.ic.remove(content);
     }
 

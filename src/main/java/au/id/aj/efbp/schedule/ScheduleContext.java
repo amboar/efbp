@@ -14,20 +14,18 @@
  */
 package au.id.aj.efbp.schedule;
 
-
 /**
  * An interface for registering periodic or event-based tasks.
  */
-public interface ScheduleContext
-{
+public interface ScheduleContext {
     /**
      * Allows implementors to register a periodic task for execution using the
      * visitor pattern.
      *
      * @param scheduler
-     *          The scheduler with which to register the periodic task.
-     *          Typically the task will be a Node implementing the Periodic
-     *          interface.
+     *            The scheduler with which to register the periodic task.
+     *            Typically the task will be a Node implementing the Periodic
+     *            interface.
      */
     void schedule(final Scheduler scheduler);
 }

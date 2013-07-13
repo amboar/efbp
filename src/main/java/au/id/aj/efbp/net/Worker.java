@@ -18,6 +18,5 @@ import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.endpoint.Source;
 
 public interface Worker<I, E> extends Sink<I>, Ingress<I>, Process<I, E>,
-        Egress<E>, Source<E>
-{
+        Egress<E>, Source<E> {
 }

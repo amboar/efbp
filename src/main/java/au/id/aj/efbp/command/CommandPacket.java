@@ -19,12 +19,10 @@ import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.node.Node;
 
 @SuppressWarnings("rawtypes")
-public class CommandPacket implements Packet
-{
+public class CommandPacket implements Packet {
     private final Command command;
 
-    public CommandPacket(final Command command)
-    {
+    public CommandPacket(final Command command) {
         this.command = command;
     }
 
@@ -34,15 +32,13 @@ public class CommandPacket implements Packet
     }
 
     @Override
-    public Object data()
-    {
+    public Object data() {
         final String msg = "No data in command packet";
         throw new UnsupportedOperationException(msg);
     }
 
     @Override
-    public void command(Node node)
-    {
+    public void command(Node node) {
         if (!this.command.isFor(node)) {
             return;
         }

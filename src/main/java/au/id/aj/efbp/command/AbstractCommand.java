@@ -21,26 +21,22 @@ import java.util.Set;
 import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
 
-public abstract class AbstractCommand implements Command
-{
+public abstract class AbstractCommand implements Command {
     private final CommandId id;
     private final Set<NodeId> nodeIds;
 
-    public AbstractCommand(final CommandId id, final NodeId... nodeIds)
-    {
+    public AbstractCommand(final CommandId id, final NodeId... nodeIds) {
         this.id = id;
         this.nodeIds = new HashSet<>(Arrays.asList(nodeIds));
     }
 
     @Override
-    public final CommandId id()
-    {
+    public final CommandId id() {
         return this.id;
     }
 
     @Override
-    public final boolean isFor(Node node)
-    {
+    public final boolean isFor(Node node) {
         return this.nodeIds.isEmpty() || this.nodeIds.contains(node.id());
     }
 }

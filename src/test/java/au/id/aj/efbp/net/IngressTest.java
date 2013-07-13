@@ -31,10 +31,9 @@ import au.id.aj.efbp.transport.ConcurrentConnection;
 import au.id.aj.efbp.transport.Connection;
 
 @RunWith(JUnit4.class)
-public class IngressTest
-{
-    private <T> Connection<T> newFilledConnection(@SuppressWarnings("unchecked") final T... ts)
-    {
+public class IngressTest {
+    private <T> Connection<T> newFilledConnection(
+            @SuppressWarnings("unchecked") final T... ts) {
         final Connection<T> connection = new ConcurrentConnection<T>();
         for (T t : ts) {
             final Packet<T> packet = new DataPacket<T>(t);
@@ -44,13 +43,12 @@ public class IngressTest
     }
 
     @Test
-    public void drainFromAll()
-    {
+    public void drainFromAll() {
         final Object o1 = new Object();
         final Object o2 = new Object();
         final Connection<Object> source = newFilledConnection(o1, o2);
-        final Collection<Packet<Object>> drained =
-            Ingress.Utils.drainFrom(source);
+        final Collection<Packet<Object>> drained = Ingress.Utils
+                .drainFrom(source);
         assertTrue(!source.iterator().hasNext());
         assertEquals(2, drained.size());
         final Iterator<Packet<Object>> iter = drained.iterator();
@@ -60,13 +58,12 @@ public class IngressTest
     }
 
     @Test
-    public void drainFromMaxLess()
-    {
+    public void drainFromMaxLess() {
         final Object o1 = new Object();
         final Object o2 = new Object();
         final Connection<Object> source = newFilledConnection(o1, o2);
-        final Collection<Packet<Object>> drained =
-            Ingress.Utils.drainFrom(source, 1);
+        final Collection<Packet<Object>> drained = Ingress.Utils.drainFrom(
+                source, 1);
         assertTrue(source.iterator().hasNext());
         assertEquals(1, drained.size());
         final Iterator<Packet<Object>> iter = drained.iterator();
@@ -75,13 +72,12 @@ public class IngressTest
     }
 
     @Test
-    public void drainFromMaxEqual()
-    {
+    public void drainFromMaxEqual() {
         final Object o1 = new Object();
         final Object o2 = new Object();
         final Connection<Object> source = newFilledConnection(o1, o2);
-        final Collection<Packet<Object>> drained =
-            Ingress.Utils.drainFrom(source, 2);
+        final Collection<Packet<Object>> drained = Ingress.Utils.drainFrom(
+                source, 2);
         assertTrue(!source.iterator().hasNext());
         assertEquals(2, drained.size());
         final Iterator<Packet<Object>> iter = drained.iterator();
@@ -91,13 +87,12 @@ public class IngressTest
     }
 
     @Test
-    public void drainFromMaxGreater()
-    {
+    public void drainFromMaxGreater() {
         final Object o1 = new Object();
         final Object o2 = new Object();
         final Connection<Object> source = newFilledConnection(o1, o2);
-        final Collection<Packet<Object>> drained =
-            Ingress.Utils.drainFrom(source, 3);
+        final Collection<Packet<Object>> drained = Ingress.Utils.drainFrom(
+                source, 3);
         assertTrue(!source.iterator().hasNext());
         assertEquals(2, drained.size());
         final Iterator<Packet<Object>> iter = drained.iterator();
@@ -107,9 +102,8 @@ public class IngressTest
     }
 
     @SuppressWarnings("unchecked")
-	@Test
-    public void acquiesceOneInspector()
-    {
+    @Test
+    public void acquiesceOneInspector() {
         final Collection<Packet<Object>> packets = new LinkedList<>();
         packets.add(new DataPacket<Object>(new Object()));
         packets.add(new DataPacket<Object>(new Object()));
@@ -120,9 +114,8 @@ public class IngressTest
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	@Test
-    public void acquiesceTwoInspectors()
-    {
+    @Test
+    public void acquiesceTwoInspectors() {
         final Collection<Packet<Object>> packets = new LinkedList<>();
         packets.add(new DataPacket<Object>(new Object()));
         packets.add(new DataPacket<Object>(new Object()));

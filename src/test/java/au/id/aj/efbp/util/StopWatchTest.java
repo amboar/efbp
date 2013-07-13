@@ -25,64 +25,55 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
-public class StopWatchTest
-{
+public class StopWatchTest {
     @Test
-    public void newStopWatch()
-    {
+    public void newStopWatch() {
         @SuppressWarnings("unused")
-		final StopWatch watch = new StopWatch();
+        final StopWatch watch = new StopWatch();
     }
 
     @Test
-    public void zeroReport()
-    {
+    public void zeroReport() {
         final StopWatch watch = new StopWatch();
         assertEquals(StopWatch.ZERO_NODE_STATISTICS, watch.report());
     }
 
     @Test
-    public void resetInitialised()
-    {
+    public void resetInitialised() {
         final StopWatch watch = new StopWatch();
         watch.reset();
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void reportWhenStarted()
-    {
+    @Test(expected = IllegalStateException.class)
+    public void reportWhenStarted() {
         final StopWatch watch = new StopWatch();
         watch.start();
         watch.report();
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void startWhenStarted()
-    {
+    @Test(expected = IllegalStateException.class)
+    public void startWhenStarted() {
         final StopWatch watch = new StopWatch();
         watch.start();
         watch.start();
     }
 
     @Test
-    public void resetWhenStarted()
-    {
+    public void resetWhenStarted() {
         final StopWatch watch = new StopWatch();
         watch.start();
         watch.reset();
     }
 
     @Test
-    public void stopWhenStarted()
-    {
+    public void stopWhenStarted() {
         final StopWatch watch = new StopWatch();
         watch.start();
         watch.stop();
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void stopWhenStopped()
-    {
+    @Test(expected = IllegalStateException.class)
+    public void stopWhenStopped() {
         final StopWatch watch = new StopWatch();
         watch.start();
         watch.stop();
@@ -90,8 +81,7 @@ public class StopWatchTest
     }
 
     @Test
-    public void getTime() throws InterruptedException
-    {
+    public void getTime() throws InterruptedException {
         final StopWatch watch = new StopWatch();
         watch.start();
         TimeUnit.MILLISECONDS.sleep(1);
@@ -99,24 +89,21 @@ public class StopWatchTest
         assertTrue(1L <= watch.getTime(TimeUnit.MILLISECONDS));
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void splitWhenInitialised()
-    {
+    @Test(expected = IllegalStateException.class)
+    public void splitWhenInitialised() {
         final StopWatch watch = new StopWatch();
         watch.split();
     }
 
     @Test
-    public void splitWhenStarted()
-    {
+    public void splitWhenStarted() {
         final StopWatch watch = new StopWatch();
         watch.start();
         watch.split();
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void splitWhenStopped()
-    {
+    @Test(expected = IllegalStateException.class)
+    public void splitWhenStopped() {
         final StopWatch watch = new StopWatch();
         watch.start();
         watch.stop();
@@ -124,8 +111,7 @@ public class StopWatchTest
     }
 
     @Test
-    public void reportWhenStopped() throws InterruptedException
-    {
+    public void reportWhenStopped() throws InterruptedException {
         final StopWatch watch = new StopWatch();
         watch.start();
         TimeUnit.MILLISECONDS.sleep(1);
@@ -137,8 +123,7 @@ public class StopWatchTest
     }
 
     @Test
-    public void reportSplitStatistics() throws InterruptedException
-    {
+    public void reportSplitStatistics() throws InterruptedException {
         final StopWatch watch = new StopWatch();
         watch.start();
         TimeUnit.MILLISECONDS.sleep(1);

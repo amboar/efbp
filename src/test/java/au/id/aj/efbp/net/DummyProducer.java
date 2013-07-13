@@ -18,8 +18,7 @@ import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.node.PliantNodeId;
 
-public class DummyProducer<E> extends AbstractProducer<E>
-{
+public class DummyProducer<E> extends AbstractProducer<E> {
     public static final NodeId ID = new PliantNodeId<String>(
             DummyProducer.class.getSimpleName());
 

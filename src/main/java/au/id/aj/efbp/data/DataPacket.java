@@ -16,36 +16,30 @@ package au.id.aj.efbp.data;
 
 import au.id.aj.efbp.node.Node;
 
-public class DataPacket<T> implements Packet<T>
-{
+public class DataPacket<T> implements Packet<T> {
     private final T data;
 
-    public DataPacket(final T data)
-    {
+    public DataPacket(final T data) {
         this.data = data;
     }
 
     @Override
-    public Type type()
-    {
+    public Type type() {
         return Type.DATA;
     }
 
     @Override
-    public T data()
-    {
+    public T data() {
         return this.data;
     }
 
     @Override
-    public void command(final Node node)
-    {
+    public void command(final Node node) {
         throw new UnsupportedOperationException("No command in data packet");
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return this.data.toString();
     }
 }

@@ -36,20 +36,18 @@ import au.id.aj.efbp.transport.Inbound;
 import au.id.aj.efbp.transport.Outbound;
 
 @RunWith(JUnit4.class)
-public class EgressTest
-{
-    private int inboundSize(final Inbound<?> inbound)
-    {
+public class EgressTest {
+    private int inboundSize(final Inbound<?> inbound) {
         int i = 0;
-        for (@SuppressWarnings("unused") Packet<?> packet : inbound) {
+        for (@SuppressWarnings("unused")
+        Packet<?> packet : inbound) {
             i++;
         }
         return i;
     }
 
     @Test
-    public void egressOneToSingle()
-    {
+    public void egressOneToSingle() {
         final Connections<Object> connections = new ConnectionRegistry<>();
         final Consumer<Object> ingress = new DummyConsumer<>();
         Source.Utils.connect(connections, ingress, DummyConsumer.IN);
@@ -63,16 +61,15 @@ public class EgressTest
     }
 
     @Test
-    public void egressMultipleToSingle()
-    {
+    public void egressMultipleToSingle() {
         final Consumer<Object> ingress = new DummyConsumer<>();
         final Producer<Object> egress = new DummyProducer<>();
         egress.connect(ingress, DummyConsumer.IN);
         final List<Packet<Object>> packets = new LinkedList<>();
         {
             for (int i = 0; i < 2; i++) {
-                final Packet<Object> packet =
-                    new DataPacket<Object>(new Object());
+                final Packet<Object> packet = new DataPacket<Object>(
+                        new Object());
                 packets.add(packet);
             }
         }

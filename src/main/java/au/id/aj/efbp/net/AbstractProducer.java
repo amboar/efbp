@@ -30,16 +30,15 @@ import au.id.aj.efbp.schedule.Scheduler;
 import au.id.aj.efbp.transport.ConcurrentConnection;
 import au.id.aj.efbp.transport.Connection;
 
-public abstract class AbstractProducer<E> extends AbstractNode
-    implements Producer<E> {
+public abstract class AbstractProducer<E> extends AbstractNode implements
+        Producer<E> {
 
     private final Connection<E> inbound;
     private final Taps<E> ingressTaps;
     private final Taps<E> egressTaps;
     private final Connections<E> connections;
 
-    protected AbstractProducer(final NodeId id, final Object... content)
-    {
+    protected AbstractProducer(final NodeId id, final Object... content) {
         super(id, content);
         this.inbound = new ConcurrentConnection<>();
         this.ingressTaps = new TapRegistry<>();
@@ -48,70 +47,59 @@ public abstract class AbstractProducer<E> extends AbstractNode
     }
 
     @Override
-    public final void connect(Sink<E> sink, String name)
-    {
+    public final void connect(Sink<E> sink, String name) {
         Source.Utils.connect(this.connections, sink, name);
     }
 
     @Override
-    public final void inject(final Packet<E> packet)
-    {
+    public final void inject(final Packet<E> packet) {
         this.inbound.enqueue(packet);
         getLookup().lookup(Scheduler.class).schedule(this);
     }
 
     @Override
-    public final void inject(final Collection<Packet<E>> packets)
-    {
+    public final void inject(final Collection<Packet<E>> packets) {
         this.inbound.enqueue(packets);
         getLookup().lookup(Scheduler.class).schedule(this);
     }
 
     @Override
-    public final void addIngressTap(final Tap<E> tap)
-    {
+    public final void addIngressTap(final Tap<E> tap) {
         this.ingressTaps.add(tap);
     }
 
     @Override
-    public final void removeIngressTap(final Tap<E> tap)
-    {
+    public final void removeIngressTap(final Tap<E> tap) {
         this.ingressTaps.remove(tap);
     }
 
     @Override
-    public final void addEgressTap(final Tap<E> tap)
-    {
+    public final void addEgressTap(final Tap<E> tap) {
         this.egressTaps.add(tap);
     }
 
     @Override
-    public final void removeEgressTap(final Tap<E> tap)
-    {
+    public final void removeEgressTap(final Tap<E> tap) {
         this.egressTaps.remove(tap);
     }
 
     @Override
-    public final void control(final Controller controller)
-    {
+    public final void control(final Controller controller) {
         addContent(controller);
     }
 
     @Override
-    public Set<Node> execute()
-    {
+    public Set<Node> execute() {
         return egress(process(ingress()));
     }
 
     @Override
-    public Set<Node> execute(int max)
-    {
+    public Set<Node> execute(int max) {
         return egress(process(ingress(max)));
     }
 
     @Override
-    public Iterable<Packet<E>> ingress()
-    {
+    public Iterable<Packet<E>> ingress() {
         if (this.ingressTaps.isEmpty()) {
             return this.inbound;
         }
@@ -122,8 +110,7 @@ public abstract class AbstractProducer<E> extends AbstractNode
     }
 
     @Override
-    public Iterable<Packet<E>> ingress(int max)
-    {
+    public Iterable<Packet<E>> ingress(int max) {
         final Collection<Packet<E>> packets = Ingress.Utils.drainFrom(
                 this.inbound, max);
         if (!this.ingressTaps.isEmpty()) {
@@ -133,28 +120,24 @@ public abstract class AbstractProducer<E> extends AbstractNode
     }
 
     @Override
-    public Collection<Packet<E>> process(final Iterable<Packet<E>> packets)
-    {
+    public Collection<Packet<E>> process(final Iterable<Packet<E>> packets) {
         return Process.Utils.process(this, packets);
     }
 
     @Override
-    public Set<Node> egress(final Packet<E> packet)
-    {
+    public Set<Node> egress(final Packet<E> packet) {
         Taps.Utils.acquiesce(this.egressTaps, packet);
         return Egress.Utils.egress(this.connections, packet);
     }
 
     @Override
-    public Set<Node> egress(final Collection<Packet<E>> packets)
-    {
+    public Set<Node> egress(final Collection<Packet<E>> packets) {
         Taps.Utils.acquiesce(this.egressTaps, packets);
         return Egress.Utils.egress(this.connections, packets);
     }
 
     @Override
-    public void schedule(final Scheduler scheduler)
-    {
+    public void schedule(final Scheduler scheduler) {
         addContent(scheduler);
     }
 }

@@ -27,25 +27,24 @@ import au.id.aj.efbp.node.Node;
  * of nodes is primarily useful for {@see Producer} instances which may need to
  * pull data from an external source periodically.
  */
-public interface Scheduler extends Controller
-{
+public interface Scheduler extends Controller {
     /**
      * Schedules a Node for periodic scheduling on the execution queue.
      *
      * @param node
-     *          The node to schedule for execution.
+     *            The node to schedule for execution.
      *
      * @param delay
-     *          The amount of time to pass before the first scheduling.
+     *            The amount of time to pass before the first scheduling.
      *
      * @param period
-     *          The amount of time between schedulings of node's execution.
+     *            The amount of time between schedulings of node's execution.
      *
      * @return The generated timer task, allowing the caller to cancel if
-     * necessary.
+     *         necessary.
      */
-    TimerTask schedule(final Node node, final long delay,
-            final long period, final TimeUnit unit);
+    TimerTask schedule(final Node node, final long delay, final long period,
+            final TimeUnit unit);
 
     /**
      * Immediately schedule node for execution. This is useful for callbacks
@@ -54,7 +53,7 @@ public interface Scheduler extends Controller
      * forcing the calling thread to do processing work.
      *
      * @param node
-     *          The Node instance to schedule for execution.
+     *            The Node instance to schedule for execution.
      */
     void schedule(final Node node);
 
@@ -70,8 +69,7 @@ public interface Scheduler extends Controller
 
     void awaitTermination() throws InterruptedException;
 
-    public static interface PeriodicTask
-    {
+    public static interface PeriodicTask {
         Node node();
 
         TimerTask task();

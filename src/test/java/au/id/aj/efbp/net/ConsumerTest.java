@@ -29,11 +29,9 @@ import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.transport.Outbound;
 
 @RunWith(JUnit4.class)
-public class ConsumerTest
-{
+public class ConsumerTest {
     @Test
-    public void addIngressTap()
-    {
+    public void addIngressTap() {
         final Consumer<Object> consumer = new DummyConsumer<>();
         final Tap<Object> tap = new DefaultTap<>();
         consumer.addIngressTap(tap);
@@ -44,8 +42,7 @@ public class ConsumerTest
     }
 
     @Test
-    public void removeIngressTap()
-    {
+    public void removeIngressTap() {
         final Consumer<Object> consumer = new DummyConsumer<>();
         final Tap<Object> tap = new DefaultTap<>();
         consumer.addIngressTap(tap);
@@ -62,8 +59,7 @@ public class ConsumerTest
     }
 
     @Test
-    public void ingressMaxOneOfTwo()
-    {
+    public void ingressMaxOneOfTwo() {
         final Consumer<Object> consumer = new DummyConsumer<>();
         final Tap<Object> tap = new DefaultTap<>();
         consumer.addIngressTap(tap);

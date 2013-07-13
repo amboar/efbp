@@ -25,14 +25,14 @@ import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.transport.Outbound;
 
-public abstract class AbstractConsumer<I> extends AbstractNode
-    implements Consumer<I> {
+public abstract class AbstractConsumer<I> extends AbstractNode implements
+        Consumer<I> {
 
     private final Ports<I> ports;
     private final Taps<I> ingressTaps;
 
-    protected AbstractConsumer(final NodeId id, final Ports<I> ports, final Object... content)
-    {
+    protected AbstractConsumer(final NodeId id, final Ports<I> ports,
+            final Object... content) {
         super(id, content);
         this.ports = ports;
         this.ingressTaps = new TapRegistry<>();
@@ -48,13 +48,11 @@ public abstract class AbstractConsumer<I> extends AbstractNode
         this.ingressTaps.remove(tap);
     }
 
-    protected final Taps<I> ingressTaps()
-    {
+    protected final Taps<I> ingressTaps() {
         return this.ingressTaps;
     }
 
-    protected final Ports<I> ports()
-    {
+    protected final Ports<I> ports() {
         return this.ports;
     }
 
@@ -76,25 +74,22 @@ public abstract class AbstractConsumer<I> extends AbstractNode
     }
 
     @Override
-    public Iterable<Packet<I>> ingress()
-    {
+    public Iterable<Packet<I>> ingress() {
         final Collection<Packet<I>> packets = Ingress.Utils.ingress(this.ports);
         Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
     }
 
     @Override
-    public Iterable<Packet<I>> ingress(final int max)
-    {
-        final Collection<Packet<I>> packets =
-            Ingress.Utils.ingress(this.ports, max);
+    public Iterable<Packet<I>> ingress(final int max) {
+        final Collection<Packet<I>> packets = Ingress.Utils.ingress(this.ports,
+                max);
         Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
     }
 
     @Override
-    public Collection<Packet<Void>> process(Iterable<Packet<I>> packets)
-    {
+    public Collection<Packet<Void>> process(Iterable<Packet<I>> packets) {
         return Consumer.Utils.process(this, packets);
     }
 }

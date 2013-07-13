@@ -23,15 +23,12 @@ import org.slf4j.LoggerFactory;
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.Sink;
 
-public interface Consumer<I> extends Ingress<I>, Process<I, Void>, Sink<I>
-{
-    public final class Utils
-    {
-        private static final Logger logger =
-            LoggerFactory.getLogger(Consumer.class);
+public interface Consumer<I> extends Ingress<I>, Process<I, Void>, Sink<I> {
+    public final class Utils {
+        private static final Logger logger = LoggerFactory
+                .getLogger(Consumer.class);
 
-        private Utils()
-        {
+        private Utils() {
         }
 
         /**
@@ -40,8 +37,7 @@ public interface Consumer<I> extends Ingress<I>, Process<I, Void>, Sink<I>
          * maintaining a collection to return.
          */
         public static <I, E> Collection<Packet<E>> process(
-                final Process<I, E> worker, final Iterable<Packet<I>> packets)
-        {
+                final Process<I, E> worker, final Iterable<Packet<I>> packets) {
             for (Packet<I> packet : packets) {
                 try {
                     worker.process(packet);

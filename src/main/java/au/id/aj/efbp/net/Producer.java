@@ -25,7 +25,6 @@ import au.id.aj.efbp.schedule.ScheduleContext;
  * used by the scheduler to prime the network with packets, triggering the
  * execution of downstream nodes in an event-based manner.
  */
-public interface Producer<E> extends Source<E>, Inject<E>, Ingress<E>, Process<E,E>,
-        Egress<E>, ScheduleContext, ControlContext
-{
+public interface Producer<E> extends Source<E>, Inject<E>, Ingress<E>,
+        Process<E, E>, Egress<E>, ScheduleContext, ControlContext {
 }

@@ -19,20 +19,18 @@ import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.node.PliantNodeId;
 
-public class DummyWorker extends AbstractWorker<Object, Object>
-{
-    public static final NodeId ID = new PliantNodeId<String>(DummyWorker.class.getSimpleName());
+public class DummyWorker extends AbstractWorker<Object, Object> {
+    public static final NodeId ID = new PliantNodeId<String>(
+            DummyWorker.class.getSimpleName());
     public static final String IN = "IN";
     public static final String DUMMY_IN = "DUMMY_IN";
 
-    public DummyWorker()
-    {
+    public DummyWorker() {
         super(ID, Sink.Utils.<Object> generatePortMap(IN, DUMMY_IN));
     }
 
     @Override
-    public Packet<Object> process(final Packet<Object> packet)
-    {
+    public Packet<Object> process(final Packet<Object> packet) {
         return packet;
     }
 }

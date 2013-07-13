@@ -14,8 +14,6 @@
  */
 package au.id.aj.efbp.control;
 
-
-public interface ControlContext
-{
+public interface ControlContext {
     void control(final Controller control);
 }

@@ -19,13 +19,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * Records processing statistics of packets on nodes.
  */
-public interface Statistics
-{
+public interface Statistics {
     /**
      * The mean processing time of a given packet.
      *
      * @param unit
-     *          The time unit of the returned value.
+     *            The time unit of the returned value.
      *
      * @return The mean processing time.
      */
@@ -36,7 +35,7 @@ public interface Statistics
      * packets processed.
      *
      * @param unit
-     *          The time unit of the returned value.
+     *            The time unit of the returned value.
      *
      * @return The standard deviation of packet processing time.
      */

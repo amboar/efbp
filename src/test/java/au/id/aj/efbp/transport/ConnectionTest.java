@@ -27,16 +27,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
-public class ConnectionTest
-{
+public class ConnectionTest {
     @Test
-    public void destructiveIterator()
-    {
+    public void destructiveIterator() {
         final List<Object> list = new LinkedList<>();
         final Object o = new Object();
         list.add(o);
-        final Iterator<Object> iterator =
-            new Connection.DestructiveIterator<>(list.iterator());
+        final Iterator<Object> iterator = new Connection.DestructiveIterator<>(
+                list.iterator());
         assertTrue(iterator.hasNext());
         assertEquals(o, iterator.next());
         assertTrue(!iterator.hasNext());

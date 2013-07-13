@@ -39,14 +39,14 @@ public class DefaultPump implements Pump, Controller {
     @Override
     public void prime() {
         // Ensure relevant nodes can submit commands
-        final Collection<? extends ControlContext> commandSources =
-            this.network.capability(ControlContext.class);
+        final Collection<? extends ControlContext> commandSources = this.network
+                .capability(ControlContext.class);
         for (ControlContext element : commandSources) {
             element.control(this);
         }
         // Ensure relevant nodes can schedule jobs
-        final Collection<? extends ScheduleContext> schedulable =
-            this.network.capability(ScheduleContext.class);
+        final Collection<? extends ScheduleContext> schedulable = this.network
+                .capability(ScheduleContext.class);
         for (ScheduleContext element : schedulable) {
             element.schedule(this.scheduler);
         }
@@ -64,14 +64,13 @@ public class DefaultPump implements Pump, Controller {
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void submit(final Command command)
-    {
+    public void submit(final Command command) {
         // TODO: Add support for tracking submitted commands. Proposal:
         // compressed JSON representation of commands.
         this.scheduler.submit(command);
         final Packet packet = new CommandPacket(command);
-        final Collection<? extends Inject> injectables =
-            this.network.capability(Inject.class);
+        final Collection<? extends Inject> injectables = this.network
+                .capability(Inject.class);
         for (Inject inject : injectables) {
             inject.inject(packet);
         }

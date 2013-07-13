@@ -16,8 +16,7 @@ package au.id.aj.efbp.pump;
 
 import java.util.concurrent.Future;
 
-public interface Pump
-{
+public interface Pump {
     /**
      * Configures the network for execution, including scheduling timers that
      * prime the scheduling collection.
@@ -25,10 +24,10 @@ public interface Pump
     void prime();
 
     /**
-     * {@see #pump()} moves packets through the network in an event-based
-     * manner by consuming nodes from a collection and calling execute() on
-     * each. Nodes are placed in the scheduling queue by their upstreams once
-     * they have egressed a packet.
+     * {@see #pump()} moves packets through the network in an event-based manner
+     * by consuming nodes from a collection and calling execute() on each. Nodes
+     * are placed in the scheduling queue by their upstreams once they have
+     * egressed a packet.
      */
     void pump() throws InterruptedException;
 
@@ -37,12 +36,14 @@ public interface Pump
      * Test if a tag flows from all producers to all consumers in the network.
      *
      * @return A Future representing the operation that will result in a
-     * PigState enumeration value being made available.
+     *         PigState enumeration value being made available.
      */
     Future<PigState> pig();
 
     /**
      * An enumeration representing the network health.
      */
-    public enum PigState { PROGRESSING, FAILED, PASSED }
+    public enum PigState {
+        PROGRESSING, FAILED, PASSED
+    }
 }

@@ -18,6 +18,5 @@ import java.util.Queue;
 
 import au.id.aj.efbp.data.Packet;
 
-public interface Tap<I> extends Queue<Packet<I>>
-{
+public interface Tap<I> extends Queue<Packet<I>> {
 }

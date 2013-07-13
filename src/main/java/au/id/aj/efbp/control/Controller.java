@@ -16,7 +16,6 @@ package au.id.aj.efbp.control;
 
 import au.id.aj.efbp.command.Command;
 
-public interface Controller
-{
+public interface Controller {
     void submit(final Command command);
 }

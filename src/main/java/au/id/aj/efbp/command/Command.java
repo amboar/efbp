@@ -22,18 +22,17 @@ import au.id.aj.efbp.node.Node;
  * Commands act on nodes in a recordable fashion; this is a pattern straight
  * from the GoF. Command instances are uniquely identified by a CommandId
  * instance, and can be applicable to specific network nodes, classes of nodes
- * or individuals. Information on whether a command is relevant to a node can
- * be gathered through the {@see #isFor(final Node node)} interface.
+ * or individuals. Information on whether a command is relevant to a node can be
+ * gathered through the {@see #isFor(final Node node)} interface.
  *
  * Commands are serializable so that they may be stored and replayed in the
- * future. The implementation should store the relevant NodeId or Class<Node>
- * in a non-transient variable such that the command can be properly replayed.
+ * future. The implementation should store the relevant NodeId or Class<Node> in
+ * a non-transient variable such that the command can be properly replayed.
  *
  * {@link AbstractCommand} is provided for convenience so that the transient
  * nature of the referred Node instance is less likely to be forgotten.
  */
-public interface Command extends Serializable
-{
+public interface Command extends Serializable {
     /**
      * Returns the session-unique identifier for the command. The identifier is
      * used to differentiate commands providing the same name/value pair at
@@ -47,10 +46,10 @@ public interface Command extends Serializable
      * Tests if a Command instance is relevant to a given node.
      *
      * @param node
-     *          The node whose relevance to test.
+     *            The node whose relevance to test.
      *
      * @return True if the command is applicable to the supplied Node, false
-     * otherwise.
+     *         otherwise.
      */
     boolean isFor(final Node node);
 
@@ -58,7 +57,7 @@ public interface Command extends Serializable
      * Executes the command on the node.
      *
      * @param node
-     *          The node on which to execute a command.
+     *            The node on which to execute a command.
      */
     void execute(final Node node);
 }

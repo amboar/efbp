@@ -24,8 +24,7 @@ import au.id.aj.efbp.node.NodeId;
  * instances. The interface allows access to all nodes, classes, or specific
  * instances.
  */
-public interface Network
-{
+public interface Network {
     /**
      * Provides access to all nodes in the network.
      *
@@ -37,7 +36,7 @@ public interface Network
      * Provides access to all nodes in the network of a given type.
      *
      * @param type
-     *          The class of nodes to return
+     *            The class of nodes to return
      *
      * @return All nodes that are of type T.
      */
@@ -50,10 +49,10 @@ public interface Network
      * provided.
      *
      * @param nodeId
-     *          The NodeId of the node of interest.
+     *            The NodeId of the node of interest.
      *
      * @return A Node instance if the NodeId exists in the network, null
-     * otherwise.
+     *         otherwise.
      */
     Node node(final NodeId nodeId);
 
@@ -63,13 +62,13 @@ public interface Network
      * provide type-safety through centralising any type-system nastiness.
      *
      * @param nodeId
-     *          The NodeId of the node of interest.
+     *            The NodeId of the node of interest.
      *
      * @param type
-     *          Defines the return value type.
+     *            Defines the return value type.
      *
      * @return A network Node of type T with an ID of nodeId if such a node
-     * exists, otherwise null.
+     *         exists, otherwise null.
      */
     <T extends Node> T node(final NodeId nodeId, final Class<T> type);
 }

@@ -19,6 +19,5 @@ package au.id.aj.efbp.command;
  * identifier. There's no requirement for support beyond what Object provides,
  * therefore it contains no particular method signatures.
  */
-public interface CommandId
-{
+public interface CommandId {
 }

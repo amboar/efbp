@@ -20,40 +20,37 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class StopWatch
-{
+public class StopWatch {
     public static final Statistics ZERO_NODE_STATISTICS;
 
     static {
         ZERO_NODE_STATISTICS = generateEmptyStatistics();
     }
 
-    private static Statistics generateEmptyStatistics()
-    {
+    private static Statistics generateEmptyStatistics() {
         final List<Long> list = new LinkedList<>();
         list.add(Long.valueOf(0));
         return new ImmutableReport(0, list, TimeUnit.NANOSECONDS);
     }
 
-    private enum TimerState { INITIALISED, STARTED, STOPPED }
+    private enum TimerState {
+        INITIALISED, STARTED, STOPPED
+    }
 
     private List<Long> times;
     private TimerState state;
 
-    public StopWatch()
-    {
+    public StopWatch() {
         this.state = TimerState.INITIALISED;
         this.times = new LinkedList<>();
     }
 
-    public void reset()
-    {
+    public void reset() {
         this.times.clear();
         this.state = TimerState.INITIALISED;
     }
 
-    public void start()
-    {
+    public void start() {
         if (!TimerState.INITIALISED.equals(this.state)) {
             throw new IllegalStateException("Timer not in initial state");
         }
@@ -61,8 +58,7 @@ public class StopWatch
         this.state = TimerState.STARTED;
     }
 
-    public void stop()
-    {
+    public void stop() {
         if (!TimerState.STARTED.equals(this.state)) {
             throw new IllegalStateException("Timer not started");
         }
@@ -71,41 +67,38 @@ public class StopWatch
         this.state = TimerState.STOPPED;
     }
 
-    public void split()
-    {
+    public void split() {
         if (!TimerState.STARTED.equals(this.state)) {
             throw new IllegalStateException("Cannot split un-started timer");
         }
         this.times.add(System.nanoTime());
     }
 
-    private void reportingPreconditions()
-    {
-        switch(this.state) {
-            case INITIALISED:
-                throw new IllegalStateException("Timer is yet to start");
-            case STARTED:
-                throw new IllegalStateException("Timer is still running");
-            case STOPPED:
-                assert 2 <= this.times.size();
-                break;
+    private void reportingPreconditions() {
+        switch (this.state) {
+        case INITIALISED:
+            throw new IllegalStateException("Timer is yet to start");
+        case STARTED:
+            throw new IllegalStateException("Timer is still running");
+        case STOPPED:
+            assert 2 <= this.times.size();
+            break;
         }
     }
 
-    public long getTime(final TimeUnit unit)
-    {
+    public long getTime(final TimeUnit unit) {
         reportingPreconditions();
-        final long time = this.times.get(this.times.size() - 1) - this.times.get(0);
+        final long time = this.times.get(this.times.size() - 1)
+                - this.times.get(0);
         return unit.convert(time, TimeUnit.NANOSECONDS);
     }
 
-    private List<Long> deltas(final TimeUnit unit)
-    {
+    private List<Long> deltas(final TimeUnit unit) {
         reportingPreconditions();
         final Iterator<Long> iter = this.times.iterator();
         final List<Long> deltas = new LinkedList<>();
         Long prev = iter.next();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             final Long cur = iter.next();
             deltas.add(unit.convert(cur - prev, TimeUnit.NANOSECONDS));
             prev = cur;
@@ -113,8 +106,7 @@ public class StopWatch
         return Collections.unmodifiableList(deltas);
     }
 
-    public Statistics report()
-    {
+    public Statistics report() {
         if (TimerState.INITIALISED.equals(this.state)) {
             return ZERO_NODE_STATISTICS;
         }
@@ -123,14 +115,13 @@ public class StopWatch
         return new ImmutableReport(getTime(unit), deltas(unit), unit);
     }
 
-    private static class ImmutableReport implements Statistics
-    {
+    private static class ImmutableReport implements Statistics {
         private final long span;
         private final List<Long> deltas;
         private final TimeUnit dataUnit;
 
-        public ImmutableReport(final long span, final List<Long> deltas, final TimeUnit units)
-        {
+        public ImmutableReport(final long span, final List<Long> deltas,
+                final TimeUnit units) {
             assert 0 < deltas.size();
             this.span = span;
             this.deltas = deltas;
@@ -138,16 +129,16 @@ public class StopWatch
         }
 
         @Override
-        public double mean(final TimeUnit unit)
-        {
+        public double mean(final TimeUnit unit) {
             final long unitSpan = unit.convert(this.span, TimeUnit.NANOSECONDS);
-            // Subtract one from size as times contains the start and stop events;
-            // what we want to calculate is the average of the intermediate deltas.
-            return unitSpan / (double)this.deltas.size();
+            // Subtract one from size as times contains the start and stop
+            // events;
+            // what we want to calculate is the average of the intermediate
+            // deltas.
+            return unitSpan / (double) this.deltas.size();
         }
 
-        private double variance(final TimeUnit unit)
-        {
+        private double variance(final TimeUnit unit) {
             final double mean = mean(unit);
             double sumSquareError = 0.0;
             for (Long d : this.deltas) {
@@ -158,14 +149,12 @@ public class StopWatch
         }
 
         @Override
-        public double stdev(final TimeUnit unit)
-        {
+        public double stdev(final TimeUnit unit) {
             return Math.sqrt(variance(unit));
         }
 
         @Override
-        public int elements()
-        {
+        public int elements() {
             return this.deltas.size();
         }
     }

@@ -33,32 +33,30 @@ import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.schedule.DummyScheduler;
 
 @RunWith(JUnit4.class)
-public class ProducerTest
-{
+public class ProducerTest {
     @Test
-    public void producerIngressSingle()
-    {
+    public void producerIngressSingle() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Packet<Object> packet = new DataPacket<>(new Object());
         producer.inject(packet);
-        final Iterator<Packet<Object>> ingressed = producer.ingress().iterator();
+        final Iterator<Packet<Object>> ingressed = producer.ingress()
+                .iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packet, ingressed.next());
         assertTrue(!ingressed.hasNext());
     }
 
     @Test
-    public void producerIngressMultiple()
-    {
+    public void producerIngressMultiple() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final List<Packet<Object>> packets = new ArrayList<>(2);
         packets.add(new DataPacket<>(new Object()));
         packets.add(new DataPacket<>(new Object()));
         producer.inject(packets);
-        final Iterator<Packet<Object>> ingressed =
-            producer.ingress().iterator();
+        final Iterator<Packet<Object>> ingressed = producer.ingress()
+                .iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packets.get(0), ingressed.next());
         assertTrue(ingressed.hasNext());
@@ -67,24 +65,22 @@ public class ProducerTest
     }
 
     @Test
-    public void producerIngressLimited()
-    {
+    public void producerIngressLimited() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final List<Packet<Object>> packets = new ArrayList<>(2);
         packets.add(new DataPacket<>(new Object()));
         packets.add(new DataPacket<>(new Object()));
         producer.inject(packets);
-        final Iterator<Packet<Object>> ingressed =
-            producer.ingress(1).iterator();
+        final Iterator<Packet<Object>> ingressed = producer.ingress(1)
+                .iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packets.get(0), ingressed.next());
         assertTrue(!ingressed.hasNext());
     }
 
     @Test
-    public void processSingle() throws ProcessingException
-    {
+    public void processSingle() throws ProcessingException {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Packet<Object> packet = new DataPacket<>(new Object());
@@ -92,8 +88,7 @@ public class ProducerTest
     }
 
     @Test
-    public void processMultiple()
-    {
+    public void processMultiple() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Collection<Packet<Object>> packets = new LinkedList<>();
@@ -104,8 +99,7 @@ public class ProducerTest
     }
 
     @Test
-    public void producerEgressSingle()
-    {
+    public void producerEgressSingle() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Consumer<Object> consumer = new DummyConsumer<>();
@@ -113,16 +107,15 @@ public class ProducerTest
         final Packet<Object> packet = new DataPacket<>(new Object());
         final Collection<Node> execute = producer.egress(packet);
         assertTrue(execute.contains(consumer));
-        final Iterator<Packet<Object>> ingressed =
-            consumer.ingress().iterator();
+        final Iterator<Packet<Object>> ingressed = consumer.ingress()
+                .iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packet, ingressed.next());
         assertTrue(!ingressed.hasNext());
     }
 
     @Test
-    public void producerEgressMultiple()
-    {
+    public void producerEgressMultiple() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Consumer<Object> consumer = new DummyConsumer<>();
@@ -132,8 +125,8 @@ public class ProducerTest
         packets.add(new DataPacket<>(new Object()));
         final Collection<Node> execute = producer.egress(packets);
         assertTrue(execute.contains(consumer));
-        final Iterator<Packet<Object>> ingressed =
-            consumer.ingress().iterator();
+        final Iterator<Packet<Object>> ingressed = consumer.ingress()
+                .iterator();
         assertTrue(ingressed.hasNext());
         assertEquals(packets.get(0), ingressed.next());
         assertTrue(ingressed.hasNext());
@@ -142,8 +135,7 @@ public class ProducerTest
     }
 
     @Test
-    public void addIngressTap()
-    {
+    public void addIngressTap() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Tap<Object> tap = new DefaultTap<>();
@@ -156,8 +148,7 @@ public class ProducerTest
     }
 
     @Test
-    public void removeIngressTap()
-    {
+    public void removeIngressTap() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Tap<Object> tap = new DefaultTap<>();
@@ -175,8 +166,7 @@ public class ProducerTest
     }
 
     @Test
-    public void addEgressTap()
-    {
+    public void addEgressTap() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Tap<Object> tap = new DefaultTap<>();
@@ -190,8 +180,7 @@ public class ProducerTest
     }
 
     @Test
-    public void removeEgressTap()
-    {
+    public void removeEgressTap() {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Tap<Object> tap = new DefaultTap<>();
