@@ -1,0 +1,52 @@
+efbp: Evented, Flow-based Programming, where network nodes are only scheduled
+as needed.
+
+Some features of the library:
+
+      * The number of threads is decoupled from the number of nodes in
+        the network, allowing strict control of the number of threads
+        used for execution. This aids debugging and potentially puts the
+        brakes on any overhead caused by maintaining a large number of
+        active threads.
+
+      * One metadata approach to rule them all: Commands[1] are used to execute
+        changes on nodes and are propagated through the network in the same way
+        as data. As a consequence, commands can be serialised and recorded at a
+        central point for future replay through the network, aiding debugging.
+        Commands are also executed in the context of the processing thread,
+        helping ease concurrency issues.
+
+      * Events can be scheduled in a similar manner to the Java standard
+        library with TimerTasks.
+
+      * Modularity through combinations of a number of small "plumbing"
+        interfaces: The movement of data is decoupled from
+        transformations that may take place at the core of network
+        nodes. This improves testability of nodes as the semantics of
+        ingressing data, transforming, and egressing data can be tested
+        independently and without concern of thread-management.
+
+      * One scheduler can service multiple, disconnected networks:
+        There's no special handling required for components containing
+        their own networks aside from registering data sources with the
+        scheduler. The library is in-fact self hosting: it uses the same
+        scheduler instance to execute itself as it does nodes in your
+        network.
+
+      * Transparent concurrency: Implement nodes like you have no other
+        threads interacting with you (aside from those you explicitly
+        create yourself). This eases mental pain associated with
+        multi-threaded applications and reduces the likelihood of
+        concurrency-related bugs.
+
+      * Separation of processing and IO jobs. The one restriction
+        required by the implementation is that nodes should not block in
+        execution; anything that may block should be farmed out to an IO
+        thread to avoid delaying execution of other nodes in the
+        network. This approach allows the network to correctly execute
+        when only a single processing thread is allocated.
+
+      * Supports type-safe networks: Entire networks can be checked at
+        compile-time due to thorough exploitation of Java's Generics.
+
+[1] https://en.wikipedia.org/wiki/Command_pattern
