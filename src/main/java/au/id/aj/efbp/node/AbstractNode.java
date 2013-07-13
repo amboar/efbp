@@ -14,7 +14,6 @@
  */
 package au.id.aj.efbp.node;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openide.util.Lookup;
@@ -24,7 +23,7 @@ import org.openide.util.lookup.InstanceContent;
 import au.id.aj.efbp.util.Statistics;
 import au.id.aj.efbp.util.StopWatch;
 
-public class AbstractNode implements Node
+public abstract class AbstractNode implements Node
 {
     private final NodeId id;
     private final StopWatch stopwatch;
@@ -66,11 +65,11 @@ public class AbstractNode implements Node
 
     @Override
     public Set<Node> execute() {
-        return Collections.emptySet();
+        throw new UnsupportedOperationException("Unimplemented");
     }
 
     @Override
     public Set<Node> execute(int max) {
-        return execute();
+        throw new UnsupportedOperationException("Unimplemented");
     }
 }
