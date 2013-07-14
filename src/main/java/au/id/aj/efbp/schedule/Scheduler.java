@@ -68,10 +68,4 @@ public interface Scheduler {
     <T> Future<T> scheduleIo(final Callable<T> callable);
 
     void awaitTermination() throws InterruptedException;
-
-    public static interface PeriodicTask {
-        Node node();
-
-        TimerTask task();
-    }
 }
