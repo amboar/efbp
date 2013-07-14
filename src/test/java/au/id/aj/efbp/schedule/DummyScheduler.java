@@ -45,8 +45,4 @@ public class DummyScheduler implements Scheduler {
     @Override
     public void awaitTermination() throws InterruptedException {
     }
-
-    @Override
-    public void submit(Command command) {
-    }
 }

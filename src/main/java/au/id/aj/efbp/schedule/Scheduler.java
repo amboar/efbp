@@ -27,7 +27,7 @@ import au.id.aj.efbp.node.Node;
  * of nodes is primarily useful for {@see Producer} instances which may need to
  * pull data from an external source periodically.
  */
-public interface Scheduler extends Controller {
+public interface Scheduler {
     /**
      * Schedules a Node for periodic scheduling on the execution queue.
      *
