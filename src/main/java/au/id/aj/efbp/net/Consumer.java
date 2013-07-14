@@ -23,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.Sink;
 
-public interface Consumer<I> extends Ingress<I>, Process<I, Void>, Sink<I> {
+public interface Consumer<I> extends Ingress<I>, Process<I, Void>, Shutdown,
+       Sink<I> {
+
     public final class Utils {
         private static final Logger logger = LoggerFactory
                 .getLogger(Consumer.class);

@@ -14,9 +14,15 @@
  */
 package au.id.aj.efbp.data;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import au.id.aj.efbp.node.Node;
 
 public class DataPacket<T> implements Packet<T> {
+    private static final Logger logger =
+        LoggerFactory.getLogger(DataPacket.class);
+
     private final T data;
 
     public DataPacket(final T data) {
@@ -35,7 +41,7 @@ public class DataPacket<T> implements Packet<T> {
 
     @Override
     public void command(final Node node) {
-        throw new UnsupportedOperationException("No command in data packet");
+        logger.warn("Not a command packet, fix caller");
     }
 
     @Override

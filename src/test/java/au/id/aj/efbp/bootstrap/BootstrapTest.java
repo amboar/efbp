@@ -74,6 +74,7 @@ public class BootstrapTest {
                 ObjectConsumer.class);
         logger.info("Priming network");
         pump.prime();
+        pump.pump();
         logger.info("Testing packet receipt");
         synchronized (consumer.received) {
             if (consumer.received.isEmpty()) {
@@ -100,6 +101,7 @@ public class BootstrapTest {
                 ObjectConsumer.class);
         logger.info("Priming network");
         pump.prime();
+        pump.pump();
         logger.info("Testing packet receipt");
         synchronized (consumer.received) {
             if (consumer.received.isEmpty()) {
@@ -135,6 +137,7 @@ public class BootstrapTest {
                 ObjectConsumer.class);
         logger.info("Priming network");
         pump.prime();
+        pump.pump();
         logger.info("Testing packet receipt");
         synchronized (consumer.received) {
             if (consumer.received.isEmpty()) {
@@ -165,6 +168,7 @@ public class BootstrapTest {
                 public void run() {
                     logger.info("Injecting packet into producer");
                     ObjectProducer.this.inject(new DataPacket<>(new Object()));
+                    shutdown();
                 }
             });
         }
@@ -184,8 +188,14 @@ public class BootstrapTest {
             assert null != t;
             this.c++;
             if (this.n == this.c) {
-                this.t.cancel();
+                shutdown();
             }
+        }
+
+        @Override
+        public void shutdown() {
+            this.t.cancel();
+            super.shutdown();
         }
 
         @Override
@@ -221,18 +231,29 @@ public class BootstrapTest {
         }
 
         @Override
-        public Packet<Void> process(final Packet<Object> packet) {
-            logger.info("Processing packet: {}", packet);
-            this.c++;
-            if (this.n > this.c) {
-                return null;
-            }
-            logger.info("Locking received list");
+        public void shutdown() {
+            assert this.n == this.c;
+            logger.info("Locking received list for shutdown");
             synchronized (this.received) {
-                logger.info("Received list locked");
-                received.add(packet.data());
                 logger.info("Notifying listeners");
                 received.notifyAll();
+            }
+            super.shutdown();
+        }
+
+        @Override
+        public Packet<Void> process(final Packet<Object> packet) {
+            logger.info("Processing packet: {}", packet);
+            if (Packet.Type.DATA.equals(packet.type())) {
+                logger.info("Locking received list for data");
+                synchronized (this.received) {
+                    logger.info("Adding packet: {}", packet);
+                    received.add(packet.data());
+                }
+                this.c++;
+            }
+            if (Packet.Type.COMMAND.equals(packet.type())) {
+                packet.command(this);
             }
             return null;
         }

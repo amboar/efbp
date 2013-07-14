@@ -14,12 +14,18 @@
  */
 package au.id.aj.efbp.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import au.id.aj.efbp.command.Command;
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.node.Node;
 
 @SuppressWarnings("rawtypes")
 public class CommandPacket implements Packet {
+    private static final Logger logger =
+        LoggerFactory.getLogger(CommandPacket.class);
+
     private final Command command;
 
     public CommandPacket(final Command command) {
@@ -33,8 +39,8 @@ public class CommandPacket implements Packet {
 
     @Override
     public Object data() {
-        final String msg = "No data in command packet";
-        throw new UnsupportedOperationException(msg);
+        logger.warn("Not a data packet, fix caller");
+        return null;
     }
 
     @Override
@@ -43,5 +49,10 @@ public class CommandPacket implements Packet {
             return;
         }
         this.command.execute(node);
+    }
+
+    @Override
+    public String toString() {
+        return this.command.toString();
     }
 }

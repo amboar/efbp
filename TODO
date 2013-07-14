@@ -1,7 +1,3 @@
-* Add NetworkContext concept - nodes in the network can access the Network
-  instance
-* Extend on ability to stop the scheduler by allowing producers to direct the
-  network to stop and consumers to signal they've received the stop request.
 * Remove the need for Command processing boilerplate -
   Abstract{Producer,Worker,Consumer} to implement
 

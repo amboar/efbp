@@ -23,6 +23,8 @@ import au.id.aj.efbp.endpoint.ConnectionRegistry;
 import au.id.aj.efbp.endpoint.Connections;
 import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.endpoint.Source;
+import au.id.aj.efbp.lifecycle.Lifecycle;
+import au.id.aj.efbp.lifecycle.LifecycleContext;
 import au.id.aj.efbp.node.AbstractNode;
 import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
@@ -31,7 +33,7 @@ import au.id.aj.efbp.transport.ConcurrentConnection;
 import au.id.aj.efbp.transport.Connection;
 
 public abstract class AbstractProducer<E> extends AbstractNode implements
-        Producer<E> {
+        Producer<E>, LifecycleContext, Shutdown {
 
     private final Connection<E> inbound;
     private final Taps<E> ingressTaps;
@@ -89,6 +91,11 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
     }
 
     @Override
+    public final void lifecycle(final Lifecycle lifecycle) {
+        addContent(lifecycle);
+    }
+
+    @Override
     public Set<Node> execute() {
         return egress(process(ingress()));
     }
@@ -139,5 +146,10 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
     @Override
     public void schedule(final Scheduler scheduler) {
         addContent(scheduler);
+    }
+
+    @Override
+    public void shutdown() {
+        getLookup().lookup(Lifecycle.class).shutdown(this);
     }
 }

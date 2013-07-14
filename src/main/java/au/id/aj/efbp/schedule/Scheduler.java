@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 import au.id.aj.efbp.control.Controller;
 import au.id.aj.efbp.node.Node;
+import au.id.aj.efbp.net.Producer;
+import au.id.aj.efbp.net.Consumer;
 
 /**
  * Exposes the ability to periodically schedule Nodes for execution. Scheduling

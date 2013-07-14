@@ -33,11 +33,10 @@ import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.net.AbstractConsumer;
 import au.id.aj.efbp.net.Inject;
 import au.id.aj.efbp.net.Process;
-import au.id.aj.efbp.net.Process.Utils;
-import au.id.aj.efbp.plug.Pluggable;
 import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.node.PliantNodeId;
+import au.id.aj.efbp.plug.Pluggable;
 
 /**
  * Implements the core execution engine by processing Nodes and connecting its
@@ -139,6 +138,12 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
             }
         };
         this.executors.submit(runnable);
+    }
+
+    @Override
+    public void shutdown() {
+        // Ignore this, wait for StopCommand instead
+        return;
     }
 
     @Override

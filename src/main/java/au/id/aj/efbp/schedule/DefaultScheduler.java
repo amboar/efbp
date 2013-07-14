@@ -23,14 +23,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import au.id.aj.efbp.bootstrap.Bootstrap;
-import au.id.aj.efbp.control.Controller;
 import au.id.aj.efbp.command.Command;
 import au.id.aj.efbp.command.CommandPacket;
+import au.id.aj.efbp.control.Controller;
 import au.id.aj.efbp.data.DataPacket;
-import au.id.aj.efbp.plug.Pluggable;
 import au.id.aj.efbp.node.Node;
+import au.id.aj.efbp.plug.Pluggable;
 
-public class DefaultScheduler implements Scheduler, Controller, Pluggable {
+public class DefaultScheduler implements Controller, Scheduler, Pluggable {
     private final Bootstrap bootstrap;
     private final Timer timer;
     private final ExecutorService executors;
@@ -88,7 +88,7 @@ public class DefaultScheduler implements Scheduler, Controller, Pluggable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void submit(Command command) {
+    public void submit(final Command command) {
         this.bootstrap.inject(new CommandPacket(command));
     }
 }

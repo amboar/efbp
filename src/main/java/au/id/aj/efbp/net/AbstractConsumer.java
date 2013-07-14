@@ -20,13 +20,17 @@ import java.util.Set;
 
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.Ports;
+import au.id.aj.efbp.lifecycle.Lifecycle;
+import au.id.aj.efbp.lifecycle.LifecycleContext;
 import au.id.aj.efbp.node.AbstractNode;
 import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
+import au.id.aj.efbp.schedule.ScheduleContext;
+import au.id.aj.efbp.schedule.Scheduler;
 import au.id.aj.efbp.transport.Outbound;
 
 public abstract class AbstractConsumer<I> extends AbstractNode implements
-        Consumer<I> {
+        Consumer<I>, LifecycleContext {
 
     private final Ports<I> ports;
     private final Taps<I> ingressTaps;
@@ -62,6 +66,11 @@ public abstract class AbstractConsumer<I> extends AbstractNode implements
     }
 
     @Override
+    public final void lifecycle(final Lifecycle lifecycle) {
+        addContent(lifecycle);
+    }
+
+    @Override
     public Set<Node> execute() {
         process(ingress());
         return Collections.emptySet();
@@ -91,5 +100,10 @@ public abstract class AbstractConsumer<I> extends AbstractNode implements
     @Override
     public Collection<Packet<Void>> process(Iterable<Packet<I>> packets) {
         return Consumer.Utils.process(this, packets);
+    }
+
+    @Override
+    public void shutdown() {
+        getLookup().lookup(Lifecycle.class).shutdown(this);
     }
 }
