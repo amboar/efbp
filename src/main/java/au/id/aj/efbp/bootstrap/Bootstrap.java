@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import au.id.aj.efbp.net.AbstractConsumer;
 import au.id.aj.efbp.net.Inject;
 import au.id.aj.efbp.net.Process;
 import au.id.aj.efbp.net.Process.Utils;
+import au.id.aj.efbp.plug.Pluggable;
 import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.node.PliantNodeId;
@@ -42,7 +44,8 @@ import au.id.aj.efbp.node.PliantNodeId;
  * input queue to its own output, feeding itself with the set of nodes N+1 which
  * is the result of executing the current set N.
  */
-public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node> {
+public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
+       Pluggable {
     private static final Logger logger = LoggerFactory
             .getLogger(Bootstrap.class);
 
@@ -52,9 +55,11 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node> {
 
     private final Runnable job;
     private final ExecutorService executors;
+    private final AtomicBoolean plugged;
 
     public Bootstrap(final int poolSize) {
         super(ID, Sink.Utils.<Node> generatePortMap(IN), new Control());
+        this.plugged = new AtomicBoolean(false);
         this.executors = Executors.newFixedThreadPool(poolSize);
         this.job = new Runnable() {
             @Override
@@ -68,6 +73,17 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node> {
         };
     }
 
+    public void plug()
+    {
+        this.plugged.set(true);
+    }
+
+    public void unplug()
+    {
+        this.plugged.set(false);
+        this.executors.submit(this.job);
+    }
+
     @Override
     public final void inject(final Packet<Node> packet) {
         if (getLookup().lookup(Control.class).shouldStop()) {
@@ -76,8 +92,13 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node> {
         }
         logger.info("Injecting node: {}", packet);
         ports().get(IN).enqueue(packet);
-        this.executors.submit(this.job);
-        logger.info("Queued node and scheduled Bootstrap");
+        logger.info("Queued nodes");
+        if (this.plugged.get()) {
+            logger.info("Bootstrap queue is plugged, execution delayed");
+        } else {
+            this.executors.submit(this.job);
+            logger.info("Scheduled Bootstrap");
+        }
     }
 
     @Override
@@ -92,8 +113,12 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node> {
         }
         logger.info("Injecting nodes: {}", packets);
         ports().get(IN).enqueue(packets);
-        this.executors.submit(this.job);
-        logger.info("Queued nodes and scheduled Bootstrap");
+        if (this.plugged.get()) {
+            logger.info("Bootstrap queue is plugged, execution delayed");
+        } else {
+            this.executors.submit(this.job);
+            logger.info("Scheduled Bootstrap");
+        }
     }
 
     private void processData(final Node node) {

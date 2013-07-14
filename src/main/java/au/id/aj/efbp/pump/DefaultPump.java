@@ -25,19 +25,20 @@ import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.net.Inject;
 import au.id.aj.efbp.net.Network;
 import au.id.aj.efbp.schedule.ScheduleContext;
-import au.id.aj.efbp.schedule.Scheduler;
+import au.id.aj.efbp.schedule.DefaultScheduler;
 
 public class DefaultPump implements Pump, Controller {
     private final Network network;
-    private final Scheduler scheduler;
+    private final DefaultScheduler scheduler;
 
-    public DefaultPump(final Network network, final Scheduler scheduler) {
+    public DefaultPump(final Network network, final DefaultScheduler scheduler) {
         this.network = network;
         this.scheduler = scheduler;
     }
 
     @Override
     public void prime() {
+        this.scheduler.plug();
         // Ensure relevant nodes can submit commands
         final Collection<? extends ControlContext> commandSources = this.network
                 .capability(ControlContext.class);
@@ -50,6 +51,7 @@ public class DefaultPump implements Pump, Controller {
         for (ScheduleContext element : schedulable) {
             element.schedule(this.scheduler);
         }
+        this.scheduler.unplug();
     }
 
     @Override

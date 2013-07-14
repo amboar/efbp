@@ -54,7 +54,7 @@ public class BootstrapTest {
             .getLogger(BootstrapTest.class);
 
     private Bootstrap bootstrap;
-    private Scheduler scheduler;
+    private DefaultScheduler scheduler;
 
     @Before
     public void setUp() {
@@ -110,7 +110,6 @@ public class BootstrapTest {
             assertTrue(!consumer.received.isEmpty());
             logger.info("Done");
         }
-
     }
 
     @Test

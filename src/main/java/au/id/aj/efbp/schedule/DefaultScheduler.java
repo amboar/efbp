@@ -26,9 +26,10 @@ import au.id.aj.efbp.bootstrap.Bootstrap;
 import au.id.aj.efbp.command.Command;
 import au.id.aj.efbp.command.CommandPacket;
 import au.id.aj.efbp.data.DataPacket;
+import au.id.aj.efbp.plug.Pluggable;
 import au.id.aj.efbp.node.Node;
 
-public class DefaultScheduler implements Scheduler {
+public class DefaultScheduler implements Scheduler, Pluggable {
     private final Bootstrap bootstrap;
     private final Timer timer;
     private final ExecutorService executors;
@@ -52,6 +53,16 @@ public class DefaultScheduler implements Scheduler {
         final long periodMs = TimeUnit.MILLISECONDS.convert(period, unit);
         this.timer.scheduleAtFixedRate(task, delayMs, periodMs);
         return task;
+    }
+
+    @Override
+    public void plug() {
+        this.bootstrap.plug();
+    }
+
+    @Override
+    public void unplug() {
+        this.bootstrap.unplug();
     }
 
     @Override
