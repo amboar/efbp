@@ -117,7 +117,7 @@ public class BootstrapTest {
         final Network network = (new NetworkBuilder()).get();
         final DefaultPump pump = new DefaultPump(network, this.scheduler);
         pump.prime();
-        pump.submit(new Bootstrap.StopCommand(new CommandId() {
+        pump.submit(new HaltCommand(new CommandId() {
         }));
         pump.pump();
     }

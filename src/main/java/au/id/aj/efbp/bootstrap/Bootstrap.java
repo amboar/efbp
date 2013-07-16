@@ -186,22 +186,4 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
             wait();
         }
     }
-
-    public static class StopCommand extends AbstractCommand {
-        private static final long serialVersionUID = 1341221514588307327L;
-
-        public StopCommand(final CommandId id) {
-            super(id, Bootstrap.ID);
-        }
-
-        @Override
-        public void execute(Node node) {
-            final Control control = node.getLookup().lookup(Control.class);
-            if (null == control) {
-                logger.error("Control lookup cannot be null");
-                return;
-            }
-            control.stop();
-        }
-    }
 }
