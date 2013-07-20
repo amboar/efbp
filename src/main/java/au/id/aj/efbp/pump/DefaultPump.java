@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import au.id.aj.efbp.bootstrap.HaltCommand;
 import au.id.aj.efbp.command.Command;
-import au.id.aj.efbp.command.CommandId;
 import au.id.aj.efbp.command.CommandPacket;
+import au.id.aj.efbp.command.LongCommandId;
 import au.id.aj.efbp.control.ControlContext;
 import au.id.aj.efbp.control.Controller;
 import au.id.aj.efbp.data.Packet;
@@ -57,11 +57,11 @@ public class DefaultPump implements Controller, Lifecycle, Pump {
         this.network = network;
         this.scheduler = scheduler;
         {
-            final Command command = new ShutdownCommand(new CommandId() {});
+            final Command command = new ShutdownCommand(LongCommandId.next());
             this.beginShutdown = new Trigger<>(Producer.class, command);
         }
         {
-            final Command command = new HaltCommand(new CommandId() {});
+            final Command command = new HaltCommand(LongCommandId.next());
             this.endShutdown = new Trigger<>(Consumer.class, command);
         }
     }

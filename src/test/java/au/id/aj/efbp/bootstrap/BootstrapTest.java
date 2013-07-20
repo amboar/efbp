@@ -30,7 +30,7 @@ import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.id.aj.efbp.command.CommandId;
+import au.id.aj.efbp.command.LongCommandId;
 import au.id.aj.efbp.data.DataPacket;
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.net.DummyConsumer;
@@ -119,8 +119,7 @@ public class BootstrapTest {
         final Network network = (new NetworkBuilder()).get();
         final DefaultPump pump = new DefaultPump(network, this.scheduler);
         pump.prime();
-        pump.submit(new HaltCommand(new CommandId() {
-        }));
+        pump.submit(new HaltCommand(LongCommandId.next()));
         pump.pump();
     }
 

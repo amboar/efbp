@@ -5,6 +5,5 @@
 
   extracting data from the packet and calling if it's a data packet, or
   instead, executing the command.
-* Implement CommandId.
 * Implement IoContext concept to make it easy to schedule distinct IO jobs that
   should execute in serial order (eg, writing chunks of data to a file).
