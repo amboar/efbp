@@ -17,6 +17,8 @@ package au.id.aj.efbp.schedule;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -90,5 +92,77 @@ public class DefaultScheduler implements Controller, Scheduler, Pluggable {
     @Override
     public void submit(final Command command) {
         this.bootstrap.inject(new CommandPacket(command));
+    }
+
+    @Override
+    public LinearIoContext newLinearIoContext(final Object io) {
+        return new LinearIo(io);
+    }
+
+    @Override
+    public TreeIoContext newTreeIoContext(final Object io) {
+        return new TreeIo(io);
+    }
+
+    private class LinearIo implements LinearIoContext {
+        private Future<?> parent = null;
+        private TreeIo context;
+
+        public LinearIo(final Object io) {
+            this.context = new TreeIo(io);
+        }
+
+        @Override
+        public <T> Future<T> schedule(final Callable<T> callable) {
+            return schedule(callable, false);
+        }
+
+        @Override
+        public <T> Future<T> schedule(final Callable<T> callable,
+                final boolean force) {
+            synchronized (this) {
+                final Future<T> newParent =
+                    context.schedule(callable, this.parent, force);
+                this.parent = newParent;
+                return newParent;
+            }
+        }
+    }
+
+    private class TreeIo implements TreeIoContext {
+        private final Object io;
+
+        public TreeIo(final Object io) {
+            this.io = io;
+        }
+
+        @Override
+        public <T, U> Future<T> schedule(final Callable<T> callable,
+                final Future<U> parent) {
+            return schedule(callable, parent, false);
+        }
+
+        @Override
+        public <T, U> Future<T> schedule(final Callable<T> callable,
+                final Future<U> parent, final boolean force) {
+            final Callable<T> wrapper = new Callable<T>() {
+                @Override
+                public T call() throws Exception {
+                    if (null != parent) {
+                        try {
+                            parent.get();
+                        } catch (ExecutionException | CancellationException e) {
+                            if (!force) {
+                                throw e;
+                            }
+                        }
+                    }
+                    synchronized (io) {
+                        return callable.call();
+                    }
+                }
+            };
+            return executors.submit(wrapper);
+        }
     }
 }

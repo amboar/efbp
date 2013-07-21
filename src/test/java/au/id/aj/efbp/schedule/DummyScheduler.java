@@ -19,9 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import au.id.aj.efbp.command.Command;
 import au.id.aj.efbp.node.Node;
-import au.id.aj.efbp.schedule.Scheduler;
 
 public class DummyScheduler implements Scheduler {
     @Override
@@ -44,5 +42,15 @@ public class DummyScheduler implements Scheduler {
 
     @Override
     public void awaitTermination() throws InterruptedException {
+    }
+
+    @Override
+    public LinearIoContext newLinearIoContext(Object io) {
+        return null;
+    }
+
+    @Override
+    public TreeIoContext newTreeIoContext(Object io) {
+        return null;
     }
 }

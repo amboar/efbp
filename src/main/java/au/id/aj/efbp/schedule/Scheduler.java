@@ -19,10 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import au.id.aj.efbp.control.Controller;
 import au.id.aj.efbp.node.Node;
-import au.id.aj.efbp.net.Producer;
-import au.id.aj.efbp.net.Consumer;
 
 /**
  * Exposes the ability to periodically schedule Nodes for execution. Scheduling
@@ -65,9 +62,14 @@ public interface Scheduler {
     void scheduleIo(final Runnable runnable);
 
     /**
-     * Starts a thread dedicated to performing the provided task.
+     * Starts a thread dedicated to performing the provided task. The provided
+     * task is scheduled for execution with no relation to other IO jobs.
      */
     <T> Future<T> scheduleIo(final Callable<T> callable);
+
+    LinearIoContext newLinearIoContext(final Object io);
+
+    TreeIoContext newTreeIoContext(final Object io);
 
     void awaitTermination() throws InterruptedException;
 }
