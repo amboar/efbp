@@ -1,7 +1,7 @@
-* Remove the need for Command processing boilerplate -
-  Abstract{Producer,Worker,Consumer} to implement
+* Make AbstractProducer implement 'Packet<O> process(Packet<I> packet)', defaulting to detecting command packets and executing them on the node as necessary followed by returning the provided packet.
 
-        O process(I data) throws ProcessingException;
+* Consider transforming the 'Packet<O> process(Packet<I> packet)' method to the following signature:
 
-  extracting data from the packet and calling if it's a data packet, or
-  instead, executing the command.
+    void process(Packet<I> in, Collection<Packet<O>> out)
+
+  which would allow one or more command packets to be queued in reaction to each input packet. 
