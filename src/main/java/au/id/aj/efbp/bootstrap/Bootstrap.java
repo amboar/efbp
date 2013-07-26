@@ -147,18 +147,18 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     }
 
     @Override
-    public Packet<Void> process(final Packet<Node> packet) {
-        switch (packet.type()) {
+    public void process(final Packet<Node> inbound,
+            final Collection<Packet<Void>> outbound) {
+        switch (inbound.type()) {
         case COMMAND:
-            logger.info("Processing command packet: {}", packet);
-            packet.command(this);
+            logger.info("Processing command packet: {}", inbound);
+            inbound.command(this);
             break;
         case DATA:
-            logger.info("Processing node packet: {}", packet);
-            processData(packet.data());
+            logger.info("Processing node packet: {}", inbound);
+            processData(inbound.data());
             break;
         }
-        return null;
     }
 
     @Override

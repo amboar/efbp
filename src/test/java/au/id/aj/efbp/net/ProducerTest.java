@@ -84,7 +84,10 @@ public class ProducerTest {
         final Producer<Object> producer = new DummyProducer<>();
         producer.schedule(new DummyScheduler());
         final Packet<Object> packet = new DataPacket<>(new Object());
-        assertEquals(packet, producer.process(packet));
+        final List<Packet<Object>> out = new ArrayList<>(1);
+        producer.process(packet, out);
+        assertEquals(1, out.size());
+        assertEquals(packet, out.get(0));
     }
 
     @Test

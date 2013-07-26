@@ -36,13 +36,14 @@ public interface Consumer<I> extends Ingress<I>, Process<I, Void>, Shutdown,
         /**
          * Similar to Process.Utils.process(), except for in the consumer case
          * it is the end of the road for packets, therefore we shouldn't bother
-         * maintaining a collection to return.
+         * maintaining a collection to return. As such the outbound parameter
+         * to process is the empty collection.
          */
         public static <I, E> Collection<Packet<E>> process(
                 final Process<I, E> worker, final Iterable<Packet<I>> packets) {
             for (Packet<I> packet : packets) {
                 try {
-                    worker.process(packet);
+                    worker.process(packet, Collections.<Packet<E>>emptySet());
                 } catch (ProcessingException e) {
                     logger.warn("{} dropped packet: {}", worker, packet);
                 }

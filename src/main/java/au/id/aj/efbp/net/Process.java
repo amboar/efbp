@@ -14,6 +14,7 @@
  */
 package au.id.aj.efbp.net;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -34,12 +35,18 @@ public interface Process<I, E> {
      * necessarily have to be different; arbitrary manipulations of the data can
      * be carried out.
      *
-     * @param packet
+     * @param inbound
      *            The inbound packet to process
+     *
+     * @param outbound
+     *            A collection to hold packets generated in response to the
+     *            provided inbound packet. These may be zero or more data or
+     *            command packets.
      *
      * @return The processed packet.
      */
-    Packet<E> process(final Packet<I> packet) throws ProcessingException;
+    void process(final Packet<I> inbound, final Collection<Packet<E>> outbound)
+        throws ProcessingException;
 
     /**
      * Transforms multiple input packets to their output type.
@@ -74,9 +81,12 @@ public interface Process<I, E> {
         public static <I, E> Collection<Packet<E>> process(
                 final Process<I, E> worker, final Iterable<Packet<I>> packets) {
             final List<Packet<E>> collection = new LinkedList<>();
+            final List<Packet<E>> processed = new ArrayList<>();
             for (Packet<I> packet : packets) {
                 try {
-                    collection.add(worker.process(packet));
+                    processed.clear();
+                    worker.process(packet, processed);
+                    collection.addAll(processed);
                 } catch (ProcessingException e) {
                     logger.warn("{} dropped packet: {}", worker, packet);
                 }

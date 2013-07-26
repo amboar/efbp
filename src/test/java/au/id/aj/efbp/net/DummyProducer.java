@@ -14,6 +14,8 @@
  */
 package au.id.aj.efbp.net;
 
+import java.util.Collection;
+
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.node.PliantNodeId;
@@ -27,7 +29,7 @@ public class DummyProducer<E> extends AbstractProducer<E> {
     }
 
     @Override
-    public Packet<E> process(Packet<E> packet) {
-        return packet;
+    public void process(Packet<E> packet, final Collection<Packet<E>> outbound) {
+        outbound.add(packet);
     }
 }

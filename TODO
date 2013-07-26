@@ -1,7 +1,3 @@
-* Make AbstractProducer implement 'Packet<O> process(Packet<I> packet)', defaulting to detecting command packets and executing them on the node as necessary followed by returning the provided packet.
-
-* Consider transforming the 'Packet<O> process(Packet<I> packet)' method to the following signature:
-
-    void process(Packet<I> in, Collection<Packet<O>> out)
-
-  which would allow one or more command packets to be queued in reaction to each input packet. 
+* Make AbstractProducer implement 'Packet<O> process(Packet<I> packet)',
+  defaulting to detecting command packets and executing them on the node as
+  necessary followed by returning the provided packet.

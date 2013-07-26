@@ -90,7 +90,10 @@ public class WorkerTest {
     public void processSingle() throws ProcessingException {
         final Worker<Object, Object> worker = new DummyWorker();
         final Packet<Object> packet = new DataPacket<>(new Object());
-        assertEquals(packet, worker.process(packet));
+        final List<Packet<Object>> out = new ArrayList<>(1);
+        worker.process(packet, out);
+        assertEquals(1, out.size());
+        assertEquals(packet, out.get(0));
     }
 
     @Test

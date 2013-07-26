@@ -14,6 +14,8 @@
  */
 package au.id.aj.efbp.net;
 
+import java.util.Collection;
+
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.node.NodeId;
@@ -30,7 +32,8 @@ public class DummyWorker extends AbstractWorker<Object, Object> {
     }
 
     @Override
-    public Packet<Object> process(final Packet<Object> packet) {
-        return packet;
+    public void process(final Packet<Object> inbound,
+            final Collection<Packet<Object>> outbound) {
+        outbound.add(inbound);
     }
 }

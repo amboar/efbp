@@ -16,6 +16,7 @@ package au.id.aj.efbp.bootstrap;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -153,9 +154,10 @@ public class BootstrapTest {
     private static class ObjectProducer extends DummyProducer<Object> implements
             ScheduleContext {
         @Override
-        public Packet<Object> process(final Packet<Object> packet) {
+        public void process(final Packet<Object> packet,
+                final Collection<Packet<Object>> outbound) {
             logger.info("Processing packet: {}", packet);
-            return super.process(packet);
+            super.process(packet, outbound);
         }
 
         @Override
@@ -241,20 +243,20 @@ public class BootstrapTest {
         }
 
         @Override
-        public Packet<Void> process(final Packet<Object> packet) {
-            logger.info("Processing packet: {}", packet);
-            if (Packet.Type.DATA.equals(packet.type())) {
+        public void process(final Packet<Object> inbound,
+                final Collection<Packet<Void>> outbound) {
+            logger.info("Processing packet: {}", inbound);
+            if (Packet.Type.DATA.equals(inbound.type())) {
                 logger.info("Locking received list for data");
                 synchronized (this.received) {
-                    logger.info("Adding packet: {}", packet);
-                    received.add(packet.data());
+                    logger.info("Adding packet: {}", inbound);
+                    received.add(inbound.data());
                 }
                 this.c++;
             }
-            if (Packet.Type.COMMAND.equals(packet.type())) {
-                packet.command(this);
+            if (Packet.Type.COMMAND.equals(inbound.type())) {
+                inbound.command(this);
             }
-            return null;
         }
     }
 }
