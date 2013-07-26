@@ -132,6 +132,14 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
     }
 
     @Override
+    public void process(final Packet<E> inbound,
+            final Collection<Packet<E>> outbound) {
+        if (Packet.Type.COMMAND.equals(inbound.type())) {
+            inbound.command(this);
+        }
+    }
+
+    @Override
     public Set<Node> egress(final Packet<E> packet) {
         Taps.Utils.acquiesce(this.egressTaps, packet);
         return Egress.Utils.egress(this.connections, packet);

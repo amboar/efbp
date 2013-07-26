@@ -1,3 +1,0 @@
-* Make AbstractProducer implement 'Packet<O> process(Packet<I> packet)',
-  defaulting to detecting command packets and executing them on the node as
-  necessary followed by returning the provided packet.
