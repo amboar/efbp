@@ -1,0 +1,65 @@
+@startuml
+package bootstrap { }
+package command { }
+package control { }
+package data { }
+package endpoint { }
+package lifecycle { }
+package net { }
+package node { }
+package plug { }
+package pump { }
+package schedule { }
+package transport { }
+package util { }
+
+bootstrap ..> command
+bootstrap ..> data
+bootstrap ..> endpoint
+bootstrap ..> net
+bootstrap ..> node
+bootstrap ..> plug
+bootstrap ..> transport
+
+command ..> data
+command ..> node
+
+control ..> command
+
+data ..> node
+
+endpoint ..> node
+endpoint ..> transport
+
+lifecycle ..> command
+lifecycle ..> net
+lifecycle ..> node
+
+net ..> control
+net ..> data
+net ..> endpoint
+net ..> lifecycle
+net ..> node
+net ..> schedule
+net ..> transport
+
+node ..> util
+
+pump ..> bootstrap
+pump ..> command
+pump ..> control
+pump ..> data
+pump ..> lifecycle
+pump ..> net
+pump ..> schedule
+
+schedule ..> bootstrap
+schedule ..> command
+schedule ..> control
+schedule ..> data
+schedule ..> node
+schedule ..> plug
+
+transport ..> data
+
+@enduml

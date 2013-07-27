@@ -1,0 +1,6 @@
+@startuml
+interface Pluggable {
+    +plug() : void
+    +unplug() : void
+}
+@enduml

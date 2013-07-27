@@ -1,0 +1,70 @@
+@startuml
+package schedule {
+    class DefaultScheduler {
+    }
+
+    class LinearIoContext {
+        +schedule(callable : Callable<T>) : Future<T>
+        +schedule(callable : Callable<T>, force : boolean) : Future<T>
+    }
+
+    interface SchedulerContext {
+        +schedule(scheduler : Scheduler) : void
+    }
+
+    interface Scheduler {
+        +schedule(node : Node, delay : long, period : long, unit : TimeUnit) :
+        TimerTask
+        +schedule(node : Node) : void
+        +scheduleIo(runnable : Runnable) : void
+        +scheduleIo(callable : Callable<T>) : Future<T>
+        +newLinearIoContext(io : Object) : LinearIoContext
+        +newTreeIoContext(io : Object) : TreeIoContext
+        +awaitTermination() : void
+    }
+
+    class TreeIoContext {
+        +schedule(callable : Callable<T>, parent : Future<U>) : Future<T>
+        +schedule(callable : Callable<T>, parent : Future<U>, force : boolean)
+        : Future<T>
+    }
+}
+
+package bootstrap {
+    class Bootstrap
+}
+
+package command {
+    class CommandPacket
+}
+
+package control {
+    interface Controller
+}
+
+package data {
+    class DataPacket
+}
+
+package node {
+    interface Node
+}
+
+package plug {
+    interface Pluggable
+}
+
+DefaultScheduler ..> Bootstrap
+DefaultScheduler ..> CommandPacket
+DefaultScheduler ..> DataPacket
+DefaultScheduler ..> LinearIoContext
+DefaultScheduler ..> TreeIoContext
+DefaultScheduler ..|> Controller
+DefaultScheduler ..|> Pluggable
+DefaultScheduler ..|> Scheduler
+
+SchedulerContext ..> Scheduler
+
+Scheduler ..> Node
+
+@enduml

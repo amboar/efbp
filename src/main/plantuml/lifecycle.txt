@@ -1,0 +1,33 @@
+@startuml
+package lifecycle {
+    interface LifecycleContext {
+        +lifecycle(final Lifecycle lifecycle) : void
+    }
+
+    interface Lifecycle {
+        +shutdown(producer : Producer) : void
+        +shutdown(consumer : Consumer) : void
+    }
+
+    class ShutdownCommand {
+    }
+}
+
+package command {
+    class AbstractCommand
+}
+
+package net {
+    interface Consumer
+    interface Producer
+}
+
+LifecycleContext ..> Lifecycle
+
+Lifecycle ..> Consumer
+Lifecycle ..> Producer
+
+ShutdownCommand --|> AbstractCommand
+ShutdownCommand ..> Consumer
+
+@enduml

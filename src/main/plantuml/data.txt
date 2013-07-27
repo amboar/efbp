@@ -1,0 +1,15 @@
+@startuml
+
+class DataPacket<T> {
+}
+
+interface Packet<T> {
+   +enum Type { DATA, COMMAND }
+   +type() : Type
+   +data() : T
+   +command(node : Node) : void
+}
+
+DataPacket ..|> Packet
+
+@enduml

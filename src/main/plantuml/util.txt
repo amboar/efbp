@@ -1,0 +1,19 @@
+@startuml
+interface Statistics {
+ +mean(unit : TimeUnit) : double
+ +stdev(unit : TimeUnit) : double
+ +elements() : int
+}
+
+class StopWatch {
+ +reset() : void
+ +start() : void
+ +stop() : void
+ +split() : void
+ +getTime() : long
+ +report() : Statistics
+}
+
+StopWatch ..> Statistics
+
+@enduml

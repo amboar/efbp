@@ -1,0 +1,36 @@
+@startuml
+package pump {
+    class DefaultPump {
+    }
+
+    interface Pump {
+        +enum PigState { PROGRESSING, FAILED, PASSED }
+        +prime() : void
+        +pump() : void
+        +pig() : PigState
+    }
+}
+
+package control {
+    interface Controller
+}
+
+package lifecycle {
+    interface Lifecycle
+}
+
+package network {
+    interface Network
+}
+
+package schedule {
+    class DefaultScheduler
+}
+
+DefaultPump ..|> Controller
+DefaultPump ..|> Lifecycle
+DefaultPump ..|> Pump
+DefaultPump ..> Network
+DefaultPump ..> DefaultScheduler
+
+@enduml

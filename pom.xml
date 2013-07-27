@@ -140,6 +140,20 @@
                     <argLine>-XX:-UseSplitVerifier</argLine>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.github.jeluard</groupId>
+                <artifactId>plantuml-maven-plugin</artifactId>
+                <version>7941</version>
+                <configuration>
+                    <sourceFiles>
+                        <directory>${basedir}</directory>
+                        <includes>
+                            <include>src/main/plantuml/**/*.txt</include>
+                        </includes>
+                    </sourceFiles>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

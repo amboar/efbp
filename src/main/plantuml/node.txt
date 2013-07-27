@@ -1,0 +1,40 @@
+@startuml
+interface Lookup {
+    +lookup(type : Class<T>) : T
+}
+
+interface Lookup.Provider {
+    +getLookup() : Lookup
+}
+
+Lookup.Provider ..> Lookup
+
+package node {
+    abstract AbstractNode {
+        #addContent(content : Object) : void
+        #removeContent(content : Object) : void
+    }
+
+    interface NodeId {
+    }
+
+    interface Node {
+        +id() : NodeId
+        +execute() : Set<Node>
+        +execute(max : int) : Set<Node>
+        +reportStatistics() : Statistics
+    }
+
+    class PliantNodeId {
+    }
+}
+
+Node ..|> Lookup.Provider
+Node ..> NodeId
+
+AbstractNode ..|> Node
+AbstractNode ..> NodeId
+
+PliantNodeId ..|> NodeId
+
+@enduml

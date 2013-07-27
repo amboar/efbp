@@ -1,0 +1,36 @@
+@startuml
+package transport {
+    class ConcurrentConnection<T> {
+    }
+
+    interface Connection<T> {
+    }
+
+    interface Inbound<T> {
+    }
+
+    interface Outbound<T> {
+        +enqueue(packet : Packet<T>) : void
+        +enqueue(packets : Collection<Packet<T>>) : void
+    }
+}
+
+package data {
+    interface Packet<T>
+}
+
+package java.lang {
+    interface Iterable<T>
+}
+
+ConcurrentConnection ..|> Connection
+
+Connection --|> Inbound
+Connection --|> Outbound
+
+Inbound --|> Iterable
+Inbound ..> Packet
+
+Outbound ..> Packet
+
+@enduml

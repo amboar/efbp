@@ -1,0 +1,53 @@
+@startuml
+package endpoint {
+    class ConnectionRegistry<E> {
+    }
+
+    interface Connections<E> {
+    }
+
+    class PortRegistry<I> {
+    }
+
+    interface Ports<I> {
+    }
+
+    interface Sink<I> {
+        +port(name : String) : Outbound
+    }
+
+    interface Source<E> {
+        +connect(sink : Sink, name : String) : void
+    }
+}
+
+package node {
+    interface Node
+}
+
+package transport {
+    interface Outbound
+}
+
+package java.util {
+    class HashMap<K,V>
+    interface Map<K,V>
+}
+
+ConnectionRegistry --|> HashMap
+ConnectionRegistry ..|> Connections
+
+Connections --|> Map
+
+PortRegistry --|> HashMap
+PortRegistry ..|> Ports
+
+Ports --|> Map
+
+Sink --|> Node
+Sink ..> Outbound
+
+Source --|> Node
+Source ..> Sink
+
+@enduml

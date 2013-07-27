@@ -1,0 +1,39 @@
+@startuml
+package command {
+    class AbstractCommand {
+    }
+
+    interface CommandId {
+    }
+
+    interface Command {
+        +id() : CommandId
+        +isFor(node : Node)
+        +execute(node : Node)
+    }
+
+    class CommandPacket {
+    }
+
+    class LongCommandId {
+    }
+}
+
+package data {
+    class Packet
+}
+
+package java.io {
+    class Serializable
+}
+
+AbstractCommand ..|> Command
+
+Command ..|> Serializable
+Command ..> CommandId
+
+CommandPacket ..|> Packet
+
+LongCommandId ..|> CommandId
+
+@enduml
