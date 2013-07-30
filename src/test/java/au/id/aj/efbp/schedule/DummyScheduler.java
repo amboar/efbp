@@ -53,4 +53,8 @@ public class DummyScheduler implements Scheduler {
     public TreeIoContext newTreeIoContext(Object io) {
         return null;
     }
+
+    @Override
+    public void shutdown() {
+    }
 }

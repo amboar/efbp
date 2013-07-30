@@ -25,10 +25,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import au.id.aj.efbp.bootstrap.Bootstrap;
+import au.id.aj.efbp.bootstrap.HaltCommand;
 import au.id.aj.efbp.command.Command;
 import au.id.aj.efbp.command.CommandPacket;
+import au.id.aj.efbp.command.LongCommandId;
 import au.id.aj.efbp.control.Controller;
 import au.id.aj.efbp.data.DataPacket;
+import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.plug.Pluggable;
 
@@ -92,6 +95,16 @@ public class DefaultScheduler implements Controller, Scheduler, Pluggable {
     @Override
     public void submit(final Command command) {
         this.bootstrap.inject(new CommandPacket(command));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public void shutdown() {
+        this.timer.cancel();
+        @SuppressWarnings("rawtypes")
+        final Packet halt =
+            new CommandPacket(new HaltCommand(LongCommandId.next()));
+        this.bootstrap.inject(halt);
     }
 
     @Override

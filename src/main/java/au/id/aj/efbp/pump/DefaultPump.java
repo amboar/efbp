@@ -25,7 +25,6 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.id.aj.efbp.bootstrap.HaltCommand;
 import au.id.aj.efbp.command.Command;
 import au.id.aj.efbp.command.CommandPacket;
 import au.id.aj.efbp.command.LongCommandId;
@@ -56,14 +55,30 @@ public class DefaultPump implements Controller, Lifecycle, Pump {
     public DefaultPump(final Network network, final DefaultScheduler scheduler) {
         this.network = network;
         this.scheduler = scheduler;
-        {
-            final Command command = new ShutdownCommand(LongCommandId.next());
-            this.beginShutdown = new Trigger<>(Producer.class, command);
-        }
-        {
-            final Command command = new HaltCommand(LongCommandId.next());
-            this.endShutdown = new Trigger<>(Consumer.class, command);
-        }
+        this.beginShutdown = createProducerTrigger();
+        this.endShutdown = createConsumerTrigger();
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Trigger<Producer> createProducerTrigger() {
+        final Runnable action = new Runnable() {
+            @Override
+            public void run() {
+                submit(new ShutdownCommand(LongCommandId.next()));
+            }
+        };
+        return new Trigger<>(Producer.class, action);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Trigger<Consumer> createConsumerTrigger() {
+        final Runnable action = new Runnable() {
+            @Override
+            public void run() {
+                DefaultPump.this.scheduler.shutdown();
+            }
+        };
+        return new Trigger<>(Consumer.class, action);
     }
 
     @Override
@@ -127,10 +142,10 @@ public class DefaultPump implements Controller, Lifecycle, Pump {
     private class Trigger<T> {
         private final Set<T> space;
         private final Set<T> test;
-        private final Command command;
+        private final Runnable action;
 
-        public Trigger(final Class<T> type, final Command command) {
-            this.command = command;
+        public Trigger(final Class<T> type, final Runnable action) {
+            this.action = action;
             this.space = generateSpace(DefaultPump.this.network, type);
             final Map<T, Boolean> map = new ConcurrentHashMap<T, Boolean>();
             this.test = Collections.newSetFromMap(map);
@@ -153,9 +168,14 @@ public class DefaultPump implements Controller, Lifecycle, Pump {
             logger.debug("Comparing test set with type space: {}", this.space);
             if (this.test.containsAll(this.space)) {
                 final String msg =
-                    "All candidates accounted for, submitting command: {}";
-                logger.debug(msg, this.command);
-                DefaultPump.this.submit(this.command);
+                    "All candidates accounted for, triggering callback";
+                logger.debug(msg);
+                try {
+                    this.action.run();
+                } catch (Exception e) {
+                    logger.error("Trigger execution failed: {}", e.getMessage());
+                    logger.debug("Stack trace", e);
+                }
             }
         }
     }

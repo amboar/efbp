@@ -70,6 +70,8 @@ public interface Scheduler {
     LinearIoContext newLinearIoContext(final Object io);
 
     TreeIoContext newTreeIoContext(final Object io);
+    
+    void shutdown();
 
     void awaitTermination() throws InterruptedException;
 }

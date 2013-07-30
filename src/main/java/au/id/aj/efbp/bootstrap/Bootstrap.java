@@ -25,8 +25,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.id.aj.efbp.command.AbstractCommand;
-import au.id.aj.efbp.command.CommandId;
 import au.id.aj.efbp.data.DataPacket;
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.Sink;
@@ -57,9 +55,10 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     private final AtomicBoolean plugged;
 
     public Bootstrap(final int poolSize) {
-        super(ID, Sink.Utils.<Node> generatePortMap(IN), new Control());
+        super(ID, Sink.Utils.<Node> generatePortMap(IN));
         this.plugged = new AtomicBoolean(false);
         this.executors = Executors.newFixedThreadPool(poolSize);
+        addContent(new Control());
         this.job = new Runnable() {
             @Override
             public void run() {
@@ -174,7 +173,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         getLookup().lookup(Control.class).hasStopped();
     }
 
-    public static class Control {
+    public class Control {
         private boolean stop = false;
 
         public synchronized boolean shouldStop() {
@@ -183,6 +182,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
 
         public synchronized void stop() {
             this.stop = true;
+            executors.shutdown();
             notifyAll();
         }
 
