@@ -72,11 +72,13 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         };
     }
 
+    @Override
     public void plug()
     {
         this.plugged.set(true);
     }
 
+    @Override
     public void unplug()
     {
         this.plugged.set(false);
