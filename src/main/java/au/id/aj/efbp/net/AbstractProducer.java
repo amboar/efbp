@@ -137,6 +137,7 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
         if (Packet.Type.COMMAND.equals(inbound.type())) {
             inbound.command(this);
         }
+        outbound.add(inbound);
     }
 
     @Override
