@@ -120,6 +120,22 @@ public abstract class AbstractWorker<I, E> extends AbstractNode implements
         return Process.Utils.process(this, packets);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public void process(final Packet<I> inbound,
+            final Collection<Packet<E>> outbound) throws ProcessingException {
+        if (Packet.Type.COMMAND.equals(inbound.type())) {
+            inbound.command(this);
+            outbound.add((Packet)inbound);
+        } else {
+            assert Packet.Type.DATA.equals(inbound.type());
+            process(inbound.data(), outbound);
+        }
+    }
+
+    protected abstract void process(final I data,
+            final Collection<Packet<E>> outbound) throws ProcessingException;
+
     @Override
     public Set<Node> egress(final Packet<E> packet) {
         Taps.Utils.acquiesce(this.egressTaps, packet);

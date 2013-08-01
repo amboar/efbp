@@ -39,6 +39,7 @@ import au.id.aj.efbp.net.DummyProducer;
 import au.id.aj.efbp.net.DummyWorker;
 import au.id.aj.efbp.net.Network;
 import au.id.aj.efbp.net.NetworkBuilder;
+import au.id.aj.efbp.net.ProcessingException;
 import au.id.aj.efbp.node.AbstractNode;
 import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
@@ -155,7 +156,8 @@ public class BootstrapTest {
             ScheduleContext {
         @Override
         public void process(final Packet<Object> packet,
-                final Collection<Packet<Object>> outbound) {
+                final Collection<Packet<Object>> outbound)
+                throws ProcessingException {
             logger.info("Processing packet: {}", packet);
             super.process(packet, outbound);
         }
@@ -243,20 +245,13 @@ public class BootstrapTest {
         }
 
         @Override
-        public void process(final Packet<Object> inbound,
-                final Collection<Packet<Void>> outbound) {
-            logger.info("Processing packet: {}", inbound);
-            if (Packet.Type.DATA.equals(inbound.type())) {
-                logger.info("Locking received list for data");
-                synchronized (this.received) {
-                    logger.info("Adding packet: {}", inbound);
-                    received.add(inbound.data());
-                }
-                this.c++;
+        protected void process(final Object inbound) {
+            logger.info("Locking received list for data");
+            synchronized (this.received) {
+                logger.info("Adding packet: {}", inbound);
+                received.add(inbound);
             }
-            if (Packet.Type.COMMAND.equals(inbound.type())) {
-                inbound.command(this);
-            }
+            this.c++;
         }
     }
 }

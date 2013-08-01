@@ -121,7 +121,8 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         }
     }
 
-    private void processData(final Node node) {
+    @Override
+    protected void process(final Node node) {
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -145,21 +146,6 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     public void shutdown() {
         // Ignore this, wait for StopCommand instead
         return;
-    }
-
-    @Override
-    public void process(final Packet<Node> inbound,
-            final Collection<Packet<Void>> outbound) {
-        switch (inbound.type()) {
-        case COMMAND:
-            logger.info("Processing command packet: {}", inbound);
-            inbound.command(this);
-            break;
-        case DATA:
-            logger.info("Processing node packet: {}", inbound);
-            processData(inbound.data());
-            break;
-        }
     }
 
     @Override

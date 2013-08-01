@@ -14,9 +14,6 @@
  */
 package au.id.aj.efbp.net;
 
-import java.util.Collection;
-
-import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.node.PliantNodeId;
@@ -32,6 +29,6 @@ public class DummyConsumer<I> extends AbstractConsumer<I> {
     }
 
     @Override
-    public void process(Packet<I> inbound, final Collection<Packet<Void>> outbound) {
+    protected void process(final I inbound) {
     }
 }

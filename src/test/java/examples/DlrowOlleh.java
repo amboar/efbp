@@ -90,15 +90,10 @@ public class DlrowOlleh {
         }
 
         @Override
-        public void process(Packet<String> inbound,
-                Collection<Packet<String>> outbound) throws ProcessingException {
-            if (Packet.Type.COMMAND.equals(inbound.type())) {
-                inbound.command(this);
-                outbound.add(inbound);
-                return;
-            }
+        protected void process(final String inbound,
+                final Collection<Packet<String>> outbound) {
             final String reversed =
-                new StringBuffer(inbound.data()).reverse().toString();
+                new StringBuffer(inbound).reverse().toString();
             outbound.add(new DataPacket<String>(reversed));
         }
     }
@@ -117,13 +112,8 @@ public class DlrowOlleh {
         }
 
         @Override
-        public void process(Packet<String> inbound,
-                Collection<Packet<Void>> outbound) throws ProcessingException {
-            if (Packet.Type.COMMAND.equals(inbound.type())) {
-                inbound.command(this);
-                return;
-            }
-            System.out.println(inbound.data());
+        protected void process(final String data) throws ProcessingException {
+            System.out.println(data);
         }
     }
 }

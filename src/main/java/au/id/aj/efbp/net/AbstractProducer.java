@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import au.id.aj.efbp.control.Controller;
+import au.id.aj.efbp.data.DataPacket;
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.ConnectionRegistry;
 import au.id.aj.efbp.endpoint.Connections;
@@ -133,11 +134,19 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
 
     @Override
     public void process(final Packet<E> inbound,
-            final Collection<Packet<E>> outbound) {
+            final Collection<Packet<E>> outbound) throws ProcessingException {
         if (Packet.Type.COMMAND.equals(inbound.type())) {
             inbound.command(this);
+            outbound.add(inbound);
+        } else {
+            assert Packet.Type.DATA.equals(inbound.type());
+            process(inbound.data(), outbound);
         }
-        outbound.add(inbound);
+    }
+
+    protected void process(final E data,
+            final Collection<Packet<E>> outbound) throws ProcessingException {
+        outbound.add(new DataPacket<E>(data));
     }
 
     @Override

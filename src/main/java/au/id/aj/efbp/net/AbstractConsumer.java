@@ -25,8 +25,6 @@ import au.id.aj.efbp.lifecycle.LifecycleContext;
 import au.id.aj.efbp.node.AbstractNode;
 import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
-import au.id.aj.efbp.schedule.ScheduleContext;
-import au.id.aj.efbp.schedule.Scheduler;
 import au.id.aj.efbp.transport.Outbound;
 
 public abstract class AbstractConsumer<I> extends AbstractNode implements
@@ -101,6 +99,19 @@ public abstract class AbstractConsumer<I> extends AbstractNode implements
     public Collection<Packet<Void>> process(Iterable<Packet<I>> packets) {
         return Consumer.Utils.process(this, packets);
     }
+
+    @Override
+    public void process(final Packet<I> inbound,
+            final Collection<Packet<Void>> outbound) throws ProcessingException {
+        if (Packet.Type.COMMAND.equals(inbound.type())) {
+            inbound.command(this);
+        } else {
+            assert Packet.Type.DATA.equals(inbound.type());
+            process(inbound.data());
+        }
+    }
+
+    protected abstract void process(final I data) throws ProcessingException;
 
     @Override
     public void shutdown() {

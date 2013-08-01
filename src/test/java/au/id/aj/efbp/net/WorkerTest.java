@@ -19,9 +19,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +36,15 @@ import au.id.aj.efbp.transport.Outbound;
 
 @RunWith(JUnit4.class)
 public class WorkerTest {
+
+    private <T> Set<T> dataSet(final Collection<Packet<T>> packets) {
+        final Set<T> set = new HashSet<>();
+        for (Packet<T> p : packets) {
+            set.add(p.data());
+        }
+        return set;
+    }
+
     @Test
     public void transformFilledCollection() {
         final Process<Object, Object> worker = new DummyWorker();
@@ -41,7 +52,7 @@ public class WorkerTest {
         source.add(new DataPacket<Object>(new Object()));
         final Collection<Packet<Object>> transformed = Process.Utils.process(
                 worker, source);
-        assertTrue(transformed.containsAll(source));
+        assertTrue(dataSet(transformed).containsAll(dataSet(source)));
     }
 
     @Test
@@ -52,7 +63,7 @@ public class WorkerTest {
         connection.enqueue(packet);
         final Iterator<Packet<Object>> ingressed = worker.ingress().iterator();
         assertTrue(ingressed.hasNext());
-        assertEquals(packet, ingressed.next());
+        assertEquals(packet.data(), ingressed.next().data());
         assertTrue(!ingressed.hasNext());
     }
 
@@ -66,9 +77,9 @@ public class WorkerTest {
         connection.enqueue(packets);
         final Iterator<Packet<Object>> ingressed = worker.ingress().iterator();
         assertTrue(ingressed.hasNext());
-        assertEquals(packets.get(0), ingressed.next());
+        assertEquals(packets.get(0).data(), ingressed.next().data());
         assertTrue(ingressed.hasNext());
-        assertEquals(packets.get(1), ingressed.next());
+        assertEquals(packets.get(1).data(), ingressed.next().data());
         assertTrue(!ingressed.hasNext());
     }
 
@@ -82,7 +93,7 @@ public class WorkerTest {
         connection.enqueue(packets);
         final Iterator<Packet<Object>> ingressed = worker.ingress(1).iterator();
         assertTrue(ingressed.hasNext());
-        assertEquals(packets.get(0), ingressed.next());
+        assertEquals(packets.get(0).data(), ingressed.next().data());
         assertTrue(!ingressed.hasNext());
     }
 
@@ -93,7 +104,7 @@ public class WorkerTest {
         final List<Packet<Object>> out = new ArrayList<>(1);
         worker.process(packet, out);
         assertEquals(1, out.size());
-        assertEquals(packet, out.get(0));
+        assertEquals(packet.data(), out.get(0).data());
     }
 
     @Test
@@ -103,7 +114,7 @@ public class WorkerTest {
         packets.add(new DataPacket<>(new Object()));
         packets.add(new DataPacket<>(new Object()));
         final Collection<Packet<Object>> processed = worker.process(packets);
-        assertEquals(packets, processed);
+        assertEquals(dataSet(packets), dataSet(processed));
     }
 
     @Test
@@ -150,7 +161,7 @@ public class WorkerTest {
         connection.enqueue(packet);
         worker.execute();
         assertEquals(1, tap.size());
-        assertTrue(tap.contains(packet));
+        assertEquals(packet.data(), tap.poll().data());
     }
 
     @Test
@@ -163,7 +174,7 @@ public class WorkerTest {
         connection.enqueue(packet);
         worker.execute();
         assertEquals(1, tap.size());
-        assertTrue(tap.contains(packet));
+        assertEquals(packet.data(), tap.poll().data());
         tap.clear();
         worker.removeIngressTap(tap);
         connection.enqueue(packet);
@@ -182,7 +193,7 @@ public class WorkerTest {
         worker.execute();
         System.out.println(tap.toString());
         assertEquals(1, tap.size());
-        assertTrue(tap.contains(packet));
+        assertEquals(packet.data(), tap.poll().data());
     }
 
     @Test
@@ -195,7 +206,7 @@ public class WorkerTest {
         connection.enqueue(packet);
         worker.execute();
         assertEquals(1, tap.size());
-        assertTrue(tap.contains(packet));
+        assertEquals(packet.data(), tap.poll().data());
         tap.clear();
         worker.removeEgressTap(tap);
         connection.enqueue(packet);

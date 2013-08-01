@@ -1,6 +1,5 @@
 package examples;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -89,13 +88,8 @@ public class HelloWorld {
         }
 
         @Override
-        public void process(Packet<String> inbound,
-                Collection<Packet<Void>> outbound) throws ProcessingException {
-            if (Packet.Type.COMMAND.equals(inbound.type())) {
-                inbound.command(this);
-                return;
-            }
-            System.out.println(inbound.data());
+        protected void process(final String inbound) throws ProcessingException {
+            System.out.println(inbound);
         }
     }
 }

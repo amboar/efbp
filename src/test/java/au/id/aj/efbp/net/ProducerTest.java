@@ -19,9 +19,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,7 +89,15 @@ public class ProducerTest {
         final List<Packet<Object>> out = new ArrayList<>(1);
         producer.process(packet, out);
         assertEquals(1, out.size());
-        assertEquals(packet, out.get(0));
+        assertEquals(packet.data(), out.get(0).data());
+    }
+
+    private <T> Set<T> dataSet(final Collection<Packet<T>> packets) {
+        final Set<T> set = new HashSet<>();
+        for (Packet<T> p : packets) {
+            set.add(p.data());
+        }
+        return set;
     }
 
     @Test
@@ -98,7 +108,7 @@ public class ProducerTest {
         packets.add(new DataPacket<>(new Object()));
         packets.add(new DataPacket<>(new Object()));
         final Collection<Packet<Object>> processed = producer.process(packets);
-        assertEquals(packets, processed);
+        assertEquals(dataSet(packets), dataSet(processed));
     }
 
     @Test
@@ -147,7 +157,7 @@ public class ProducerTest {
         producer.inject(packet);
         producer.execute();
         assertEquals(1, tap.size());
-        assertTrue(tap.contains(packet));
+        assertEquals(packet.data(), tap.poll().data());
     }
 
     @Test
@@ -160,7 +170,7 @@ public class ProducerTest {
         producer.inject(packet);
         producer.execute();
         assertEquals(1, tap.size());
-        assertTrue(tap.contains(packet));
+        assertEquals(packet.data(), tap.poll().data());
         tap.clear();
         producer.removeIngressTap(tap);
         producer.inject(packet);
@@ -179,7 +189,7 @@ public class ProducerTest {
         producer.execute();
         System.out.println(tap.toString());
         assertEquals(1, tap.size());
-        assertTrue(tap.contains(packet));
+        assertEquals(packet.data(), tap.poll().data());
     }
 
     @Test
@@ -192,7 +202,7 @@ public class ProducerTest {
         producer.inject(packet);
         producer.execute();
         assertEquals(1, tap.size());
-        assertTrue(tap.contains(packet));
+        assertEquals(packet.data(), tap.poll().data());
         tap.clear();
         producer.removeEgressTap(tap);
         producer.inject(packet);
