@@ -145,7 +145,9 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
                     final Packet<Node> packet = new DataPacket<>(innerNode);
                     nodePackets.add(packet);
                 }
-                Bootstrap.this.inject(nodePackets);
+                if (!nodePackets.isEmpty()) {
+                    Bootstrap.this.inject(nodePackets);
+                }
             }
         };
         this.executors.submit(runnable);
