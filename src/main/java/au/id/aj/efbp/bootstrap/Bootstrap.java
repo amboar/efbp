@@ -16,7 +16,9 @@ package au.id.aj.efbp.bootstrap;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,12 +56,14 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     private final ExecutorService executors;
     private final AtomicBoolean plugged;
     private final AtomicBoolean submitted;
+    private final Map<Node, Runnable> nodeJobs;
 
     public Bootstrap(final int poolSize) {
         super(ID, Sink.Utils.<Node> generatePortMap(IN));
         this.plugged = new AtomicBoolean(false);
         this.submitted = new AtomicBoolean(false);
         this.executors = Executors.newFixedThreadPool(poolSize);
+        this.nodeJobs = new HashMap<>();
         addContent(new Control());
         this.job = new Runnable() {
             @Override
@@ -132,24 +136,28 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
 
     @Override
     protected void process(final Node node) {
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final Set<Node> innerNodes;
-                synchronized (node) {
-                    Thread.currentThread().setName(node.id().toString());
-                    innerNodes = node.execute();
+        Runnable runnable = this.nodeJobs.get(node);
+        if (null == runnable) {
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    final Set<Node> innerNodes;
+                    synchronized (node) {
+                        Thread.currentThread().setName(node.id().toString());
+                        innerNodes = node.execute();
+                    }
+                    final Set<Packet<Node>> nodePackets = new LinkedHashSet<>();
+                    for (Node innerNode : innerNodes) {
+                        final Packet<Node> packet = new DataPacket<>(innerNode);
+                        nodePackets.add(packet);
+                    }
+                    if (!nodePackets.isEmpty()) {
+                        Bootstrap.this.inject(nodePackets);
+                    }
                 }
-                final Set<Packet<Node>> nodePackets = new LinkedHashSet<>();
-                for (Node innerNode : innerNodes) {
-                    final Packet<Node> packet = new DataPacket<>(innerNode);
-                    nodePackets.add(packet);
-                }
-                if (!nodePackets.isEmpty()) {
-                    Bootstrap.this.inject(nodePackets);
-                }
-            }
-        };
+            };
+            this.nodeJobs.put(node, runnable);
+        }
         this.executors.submit(runnable);
     }
 
