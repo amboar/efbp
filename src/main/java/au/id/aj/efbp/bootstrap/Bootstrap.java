@@ -53,15 +53,18 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     private final Runnable job;
     private final ExecutorService executors;
     private final AtomicBoolean plugged;
+    private final AtomicBoolean submitted;
 
     public Bootstrap(final int poolSize) {
         super(ID, Sink.Utils.<Node> generatePortMap(IN));
         this.plugged = new AtomicBoolean(false);
+        this.submitted = new AtomicBoolean(false);
         this.executors = Executors.newFixedThreadPool(poolSize);
         addContent(new Control());
         this.job = new Runnable() {
             @Override
             public void run() {
+                submitted.set(false);
                 Thread.currentThread().setName(ID.toString());
                 synchronized (Bootstrap.this) {
                     logger.info("Triggering bootstrap");
@@ -69,6 +72,12 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
                 }
             }
         };
+    }
+
+    private void trigger() {
+        if (this.submitted.compareAndSet(false, true)) {
+            this.executors.submit(this.job);
+        }
     }
 
     @Override
@@ -81,7 +90,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     public void unplug()
     {
         this.plugged.set(false);
-        this.executors.submit(this.job);
+        trigger();
     }
 
     @Override
@@ -96,7 +105,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         if (this.plugged.get()) {
             logger.info("Bootstrap queue is plugged, execution delayed");
         } else {
-            this.executors.submit(this.job);
+            trigger();
             logger.info("Scheduled Bootstrap");
         }
     }
@@ -116,7 +125,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         if (this.plugged.get()) {
             logger.info("Bootstrap queue is plugged, execution delayed");
         } else {
-            this.executors.submit(this.job);
+            trigger();
             logger.info("Scheduled Bootstrap");
         }
     }
