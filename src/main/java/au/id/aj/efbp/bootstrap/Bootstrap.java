@@ -17,11 +17,17 @@ package au.id.aj.efbp.bootstrap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
@@ -44,7 +50,7 @@ import au.id.aj.efbp.plug.Pluggable;
  * is the result of executing the current set N.
  */
 public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
-       Pluggable {
+        Pluggable {
     private static final Logger logger = LoggerFactory
             .getLogger(Bootstrap.class);
 
@@ -56,7 +62,8 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     private final ExecutorService executors;
     private final AtomicBoolean plugged;
     private final AtomicBoolean submitted;
-    private final Map<Node, Runnable> nodeJobs;
+    private final Map<Node, Callable<Void>> nodeJobs;
+    private final Queue<Future<Void>> executingJobs;
 
     public Bootstrap(final int poolSize) {
         super(ID, Sink.Utils.<Node> generatePortMap(IN));
@@ -64,6 +71,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         this.submitted = new AtomicBoolean(false);
         this.executors = Executors.newFixedThreadPool(poolSize);
         this.nodeJobs = new HashMap<>();
+        this.executingJobs = new LinkedList<Future<Void>>();
         addContent(new Control());
         this.job = new Runnable() {
             @Override
@@ -85,14 +93,12 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     }
 
     @Override
-    public void plug()
-    {
+    public void plug() {
         this.plugged.set(true);
     }
 
     @Override
-    public void unplug()
-    {
+    public void unplug() {
         this.plugged.set(false);
         trigger();
     }
@@ -136,29 +142,14 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
 
     @Override
     protected void process(final Node node) {
-        Runnable runnable = this.nodeJobs.get(node);
-        if (null == runnable) {
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    final Set<Node> innerNodes;
-                    synchronized (node) {
-                        Thread.currentThread().setName(node.id().toString());
-                        innerNodes = node.execute();
-                    }
-                    final Set<Packet<Node>> nodePackets = new LinkedHashSet<>();
-                    for (Node innerNode : innerNodes) {
-                        final Packet<Node> packet = new DataPacket<>(innerNode);
-                        nodePackets.add(packet);
-                    }
-                    if (!nodePackets.isEmpty()) {
-                        Bootstrap.this.inject(nodePackets);
-                    }
-                }
-            };
-            this.nodeJobs.put(node, runnable);
+        Callable<Void> callable = this.nodeJobs.get(node);
+        if (null == callable) {
+            callable = new NetworkJob(node);
+            this.nodeJobs.put(node, callable);
         }
-        this.executors.submit(runnable);
+        final Future<Void> future = this.executors.submit(callable);
+        logger.debug("Adding Future to execution queue: {}", future);
+        this.executingJobs.add(future);
     }
 
     @Override
@@ -167,9 +158,32 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         return;
     }
 
+    private void cleanupJobs() {
+        logger.debug("Cleaning up finished jobs");
+        final Iterator<Future<Void>> jobs = this.executingJobs.iterator();
+        while (jobs.hasNext()) {
+            final Future<Void> job = jobs.next();
+            if (job.isDone()) {
+                try {
+                    // Test if an exception occurred by trying to fetch the
+                    // result
+                    job.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {
+                    logger.error("Job execution failed", e);
+                } finally {
+                    jobs.remove();
+                    logger.debug("Job {} complete", job);
+                }
+            }
+        }
+    }
+
     @Override
     public Collection<Packet<Void>> process(final Iterable<Packet<Node>> packets) {
-        logger.info("Processing packets: {}", packets);
+        cleanupJobs();
+        logger.debug("Processing packets: {}", packets);
         Process.Utils.process(this, packets);
         return Collections.emptySet();
     }
@@ -196,6 +210,32 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
                 return;
             }
             wait();
+        }
+    }
+
+    private class NetworkJob implements Callable<Void> {
+        private final Node node;
+
+        public NetworkJob(final Node node) {
+            this.node = node;
+        }
+
+        @Override
+        public Void call() {
+            final Set<Node> innerNodes;
+            synchronized (node) {
+                Thread.currentThread().setName(node.id().toString());
+                innerNodes = node.execute();
+            }
+            final Set<Packet<Node>> nodePackets = new LinkedHashSet<>();
+            for (Node innerNode : innerNodes) {
+                final Packet<Node> packet = new DataPacket<>(innerNode);
+                nodePackets.add(packet);
+            }
+            if (!nodePackets.isEmpty()) {
+                Bootstrap.this.inject(nodePackets);
+            }
+            return null;
         }
     }
 }
