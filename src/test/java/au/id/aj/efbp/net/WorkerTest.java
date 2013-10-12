@@ -50,8 +50,9 @@ public class WorkerTest {
         final Process<Object, Object> worker = new DummyWorker();
         final Collection<Packet<Object>> source = new LinkedList<>();
         source.add(new DataPacket<Object>(new Object()));
-        final Collection<Packet<Object>> transformed = Process.Utils.process(
-                worker, source);
+        final Process.Utils<Object, Object> processor =
+            new Process.Utils<>(worker);
+        final Collection<Packet<Object>> transformed = processor.process(source);
         assertTrue(dataSet(transformed).containsAll(dataSet(source)));
     }
 

@@ -119,6 +119,18 @@ public interface Egress<E> {
             return Collections.unmodifiableSet(triggered);
         }
 
+        public static <E> Set<Node> egress(final Connections<E> registry,
+                final Collection<Packet<E>> packets) {
+            final Set<Node> triggered = new HashSet<>();
+            for (Map.Entry<Sink<E>, Collection<Outbound<E>>> e : registry.entrySet()) {
+                for (Outbound<E> o : e.getValue()) {
+                    o.enqueue(packets);
+                    triggered.add(e.getKey());
+                }
+            }
+            return Collections.unmodifiableSet(triggered);
+        }
+
         /**
          * Egresses a collection of packets via the provided Egress
          * implementation. The purpose of this helper is to manage the returned
@@ -141,15 +153,6 @@ public interface Egress<E> {
             final Set<Node> triggered = new HashSet<>();
             for (Packet<E> packet : packets) {
                 triggered.addAll(egressor.egress(packet));
-            }
-            return Collections.unmodifiableSet(triggered);
-        }
-
-        public static <E> Set<Node> egress(final Connections<E> registry,
-                final Iterable<Packet<E>> packets) {
-            final Set<Node> triggered = new HashSet<>();
-            for (Packet<E> packet : packets) {
-                triggered.addAll(egress(registry, packet));
             }
             return Collections.unmodifiableSet(triggered);
         }

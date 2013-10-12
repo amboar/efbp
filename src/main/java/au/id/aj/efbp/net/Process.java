@@ -17,7 +17,6 @@ package au.id.aj.efbp.net;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -58,11 +57,16 @@ public interface Process<I, E> {
      */
     Collection<Packet<E>> process(final Iterable<Packet<I>> packets);
 
-    public static final class Utils {
+    public static final class Utils<I, E> {
         private static final Logger logger = LoggerFactory
                 .getLogger(Utils.class);
 
-        private Utils() {
+        private final List<Packet<E>> universe = new ArrayList<>();
+        private final List<Packet<E>> processed = new ArrayList<>();
+        private final Process<I, E> worker;
+
+        public Utils(final Process<I, E> worker) {
+            this.worker = worker;
         }
 
         /**
@@ -78,20 +82,18 @@ public interface Process<I, E> {
          *
          * @return
          */
-        public static <I, E> Collection<Packet<E>> process(
-                final Process<I, E> worker, final Iterable<Packet<I>> packets) {
-            final List<Packet<E>> collection = new LinkedList<>();
-            final List<Packet<E>> processed = new ArrayList<>();
+        public Collection<Packet<E>> process(final Iterable<Packet<I>> packets) {
+            this.universe.clear();
             for (Packet<I> packet : packets) {
                 try {
-                    processed.clear();
-                    worker.process(packet, processed);
-                    collection.addAll(processed);
+                    this.processed.clear();
+                    worker.process(packet, this.processed);
+                    this.universe.addAll(processed);
                 } catch (ProcessingException e) {
                     logger.warn("{} dropped packet: {}", worker, packet);
                 }
             }
-            return Collections.unmodifiableList(collection);
+            return Collections.unmodifiableList(this.universe);
         }
     }
 }

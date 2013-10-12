@@ -37,6 +37,7 @@ import au.id.aj.efbp.data.DataPacket;
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.Sink;
 import au.id.aj.efbp.net.AbstractConsumer;
+import au.id.aj.efbp.net.Ingress;
 import au.id.aj.efbp.net.Inject;
 import au.id.aj.efbp.net.Process;
 import au.id.aj.efbp.node.Node;
@@ -64,6 +65,8 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
     private final AtomicBoolean submitted;
     private final Map<Node, Callable<Void>> nodeJobs;
     private final Queue<Future<Void>> executingJobs;
+    private final Control control;
+    private final Process.Utils<Node, Void> processor;
 
     public Bootstrap(final int poolSize) {
         super(ID, Sink.Utils.<Node> generatePortMap(IN));
@@ -72,7 +75,8 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         this.executors = Executors.newFixedThreadPool(poolSize);
         this.nodeJobs = new HashMap<>();
         this.executingJobs = new LinkedList<Future<Void>>();
-        addContent(new Control());
+        this.control = new Control();
+        addContent(this.control);
         this.job = new Runnable() {
             @Override
             public void run() {
@@ -84,6 +88,7 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
                 }
             }
         };
+        this.processor = new Process.Utils<>(this);
     }
 
     private void trigger() {
@@ -105,24 +110,24 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
 
     @Override
     public final void inject(final Packet<Node> packet) {
-        if (getLookup().lookup(Control.class).shouldStop()) {
+        if (this.control.shouldStop()) {
             logger.info("Halting network");
             return;
         }
-        logger.info("Injecting node: {}", packet);
+        logger.debug("Injecting node: {}", packet);
         ports().get(IN).enqueue(packet);
-        logger.info("Queued nodes");
+        logger.debug("Queued nodes");
         if (this.plugged.get()) {
-            logger.info("Bootstrap queue is plugged, execution delayed");
+            logger.warn("Bootstrap queue is plugged, execution delayed");
         } else {
             trigger();
-            logger.info("Scheduled Bootstrap");
+            logger.debug("Scheduled Bootstrap");
         }
     }
 
     @Override
     public final void inject(final Collection<Packet<Node>> packets) {
-        if (getLookup().lookup(Control.class).shouldStop()) {
+        if (this.control.shouldStop()) {
             logger.info("Halting network");
             return;
         }
@@ -180,16 +185,23 @@ public class Bootstrap extends AbstractConsumer<Node> implements Inject<Node>,
         }
     }
 
+    private static <T> Iterable<T> condense(final Iterable<T> packets) {
+        logger.debug("Condensing jobs");
+        final Set<T> condensed = new LinkedHashSet<>();
+        Ingress.Utils.drainFrom(packets, condensed);
+        return condensed;
+    }
+
     @Override
     public Collection<Packet<Void>> process(final Iterable<Packet<Node>> packets) {
         cleanupJobs();
         logger.debug("Processing packets: {}", packets);
-        Process.Utils.process(this, packets);
+        this.processor.process(condense(packets));
         return Collections.emptySet();
     }
 
     public void awaitTermination() throws InterruptedException {
-        getLookup().lookup(Control.class).hasStopped();
+        this.control.hasStopped();
     }
 
     public class Control {

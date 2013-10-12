@@ -14,17 +14,20 @@
  */
 package au.id.aj.efbp.net;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import au.id.aj.efbp.data.Packet;
 import au.id.aj.efbp.endpoint.Ports;
 import au.id.aj.efbp.transport.Connection;
-import au.id.aj.efbp.transport.Inbound;
+import au.id.aj.efbp.util.Bound;
+import au.id.aj.efbp.util.CoiledIterator;
+import au.id.aj.efbp.util.CyclicIterator;
+import au.id.aj.efbp.util.Wrap;
 
 /**
  * Nodes implementing this interface accept packets from nodes implementing the
@@ -86,85 +89,50 @@ public interface Ingress<I> {
         private Utils() {
         }
 
-        public static <I> Collection<Packet<I>> drainFrom(
-                final Inbound<I> connection) {
-            final Collection<Packet<I>> drainedPackets = new LinkedList<>();
+        public static <I> Collection<I> drainFrom(final Iterable<I> connection) {
+            final Collection<I> drainedPackets = new LinkedList<>();
             return drainFrom(connection, drainedPackets);
         }
 
-        public static <I> Collection<Packet<I>> drainFrom(
-                final Inbound<I> from, final Collection<Packet<I>> to) {
-            for (Packet<I> packet : from) {
-                to.add(packet);
+        public static <I> Collection<I> drainFrom(final Iterable<I> from,
+                final Collection<I> to) {
+            for (I elem : from) {
+                to.add(elem);
             }
             return to;
         }
 
-        /**
-         * Returns at most max elements available in the Queue packets, whilst
-         * also removing the elements returned.
-         *
-         * @param connection
-         *            The connection from which to drain elements. Note that any
-         *            drained elements will no-longer be present in the
-         *            connection.
-         *
-         * @param max
-         *            The maximum number of elements to remove from connection
-         *
-         * @return A collection of all elements removed from connection. The
-         *         size of the return collection is bounded by the max
-         *         parameter.
-         */
-        public static <I> Collection<Packet<I>> drainFrom(
-                final Inbound<I> connection, final int max) {
-            final Collection<Packet<I>> drainedPackets = new LinkedList<>();
-            return drainFrom(connection, drainedPackets, max);
+        public static <I> Iterable<Packet<I>> ingress(final Ports<I> ports) {
+            switch (ports.size()) {
+            case 0:
+                return Collections.<Packet<I>> emptyList();
+            case 1:
+                return ports.values().iterator().next();
+            default:
+                final Collection<Iterator<Packet<I>>> iterators = new ArrayList<>(
+                        ports.size());
+                for (Connection<I> c : ports.values()) {
+                    iterators.add(c.iterator());
+                }
+                return new Wrap<>(new CoiledIterator<>(new CyclicIterator<>(iterators)));
+            }
         }
 
-        public static <I> Collection<Packet<I>> drainFrom(
-                final Inbound<I> from, final Collection<Packet<I>> to,
+        public static <I> Iterable<Packet<I>> ingress(final Ports<I> ports,
                 final int max) {
-            final Iterator<Packet<I>> iter = from.iterator();
-            int i = 0;
-            while (i++ < max && iter.hasNext()) {
-                to.add(iter.next());
-                // Inbound implementation expected to be destructive, however
-                // call remove just in case, as this code is provided for all
-                // implementations as a base-line. If the provided connection
-                // is indeed destructive, then remove() should be a no-op.
-                iter.remove();
-            }
-            return to;
+            return new Bound<>(ingress(ports), max);
         }
 
-        public static <I> Collection<Packet<I>> ingress(final Ports<I> ports) {
-            // Naive implementation
-            if (ports.isEmpty()) {
-                return Collections.emptyList();
-            }
+        public static <I> Collection<Packet<I>> ingressCopy(final Ports<I> ports) {
             final List<Packet<I>> packets = new LinkedList<>();
-            for (Map.Entry<String, Connection<I>> e : ports.entrySet()) {
-                drainFrom(e.getValue(), packets);
-            }
+            drainFrom(ingress(ports), packets);
             return Collections.unmodifiableList(packets);
         }
 
-        public static <I> Collection<Packet<I>> ingress(final Ports<I> ports,
-                final int max) {
-            // Naive implementation - possible queue starvation
-            if (ports.isEmpty()) {
-                return Collections.emptyList();
-            }
-            int mutableMax = max;
+        public static <I> Collection<Packet<I>> ingressCopy(
+                final Ports<I> ports, final int max) {
             final List<Packet<I>> packets = new LinkedList<>();
-            for (Map.Entry<String, Connection<I>> e : ports.entrySet()) {
-                Ingress.Utils.drainFrom(e.getValue(), packets, mutableMax);
-                mutableMax -= packets.size();
-                if (0 == mutableMax) {
-                    return packets;
-                }
-            }
+            drainFrom(ingress(ports, max), packets);
             return Collections.unmodifiableList(packets);
         }
     }

@@ -82,15 +82,22 @@ public abstract class AbstractConsumer<I> extends AbstractNode implements
 
     @Override
     public Iterable<Packet<I>> ingress() {
-        final Collection<Packet<I>> packets = Ingress.Utils.ingress(this.ports);
+        if (this.ingressTaps.isEmpty()) {
+            return Ingress.Utils.ingress(this.ports);
+        }
+        final Collection<Packet<I>> packets =
+            Ingress.Utils.ingressCopy(this.ports);
         Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
     }
 
     @Override
     public Iterable<Packet<I>> ingress(final int max) {
-        final Collection<Packet<I>> packets = Ingress.Utils.ingress(this.ports,
-                max);
+        if (this.ingressTaps.isEmpty()) {
+            return Ingress.Utils.ingress(this.ports, max); 
+        }
+        final Collection<Packet<I>> packets = Ingress.Utils.ingressCopy(
+                this.ports, max);
         Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
     }
@@ -103,11 +110,15 @@ public abstract class AbstractConsumer<I> extends AbstractNode implements
     @Override
     public void process(final Packet<I> inbound,
             final Collection<Packet<Void>> outbound) throws ProcessingException {
-        if (Packet.Type.COMMAND.equals(inbound.type())) {
-            inbound.command(this);
-        } else {
-            assert Packet.Type.DATA.equals(inbound.type());
-            process(inbound.data());
+        switch (inbound.type()) {
+            case COMMAND:
+                inbound.command(this);
+                break;
+            case DATA:
+                process(inbound.data());
+                break;
+            default:
+                assert(false);
         }
     }
 

@@ -101,6 +101,7 @@ public class DefaultScheduler implements Controller, Scheduler, Pluggable {
     @Override
     public void shutdown() {
         this.timer.cancel();
+        this.executors.shutdown();
         @SuppressWarnings("rawtypes")
         final Packet halt =
             new CommandPacket(new HaltCommand(LongCommandId.next()));

@@ -57,50 +57,6 @@ public class IngressTest {
         assertTrue(!iter.hasNext());
     }
 
-    @Test
-    public void drainFromMaxLess() {
-        final Object o1 = new Object();
-        final Object o2 = new Object();
-        final Connection<Object> source = newFilledConnection(o1, o2);
-        final Collection<Packet<Object>> drained = Ingress.Utils.drainFrom(
-                source, 1);
-        assertTrue(source.iterator().hasNext());
-        assertEquals(1, drained.size());
-        final Iterator<Packet<Object>> iter = drained.iterator();
-        assertTrue(o1.equals(iter.next().data()));
-        assertTrue(!iter.hasNext());
-    }
-
-    @Test
-    public void drainFromMaxEqual() {
-        final Object o1 = new Object();
-        final Object o2 = new Object();
-        final Connection<Object> source = newFilledConnection(o1, o2);
-        final Collection<Packet<Object>> drained = Ingress.Utils.drainFrom(
-                source, 2);
-        assertTrue(!source.iterator().hasNext());
-        assertEquals(2, drained.size());
-        final Iterator<Packet<Object>> iter = drained.iterator();
-        assertTrue(o1.equals(iter.next().data()));
-        assertTrue(o2.equals(iter.next().data()));
-        assertTrue(!iter.hasNext());
-    }
-
-    @Test
-    public void drainFromMaxGreater() {
-        final Object o1 = new Object();
-        final Object o2 = new Object();
-        final Connection<Object> source = newFilledConnection(o1, o2);
-        final Collection<Packet<Object>> drained = Ingress.Utils.drainFrom(
-                source, 3);
-        assertTrue(!source.iterator().hasNext());
-        assertEquals(2, drained.size());
-        final Iterator<Packet<Object>> iter = drained.iterator();
-        assertTrue(o1.equals(iter.next().data()));
-        assertTrue(o2.equals(iter.next().data()));
-        assertTrue(!iter.hasNext());
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     public void acquiesceOneInspector() {

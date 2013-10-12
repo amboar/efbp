@@ -6,12 +6,11 @@ import java.util.NoSuchElementException;
 public class CoiledIterator<T> implements Iterator<T> {
     private Iterator<Iterator<T>> cycle;
     private Iterator<T> iterator;
-    private T element;
-    private boolean valid;
+    private boolean valid = false;
 
     public CoiledIterator(final Iterator<Iterator<T>> cycle) {
         if (!(cycle instanceof CyclicIterator)) {
-            throw new IllegalArgumentException("Requires Cycle.CycleIterator");
+            throw new IllegalArgumentException("Requires CyclicIterator");
         }
         this.cycle = cycle;
     }
@@ -20,7 +19,6 @@ public class CoiledIterator<T> implements Iterator<T> {
         if (this.valid) {
             return true;
         }
-        this.valid = false;
         boolean empty;
         do {
             if (!this.cycle.hasNext()) {
@@ -34,7 +32,6 @@ public class CoiledIterator<T> implements Iterator<T> {
         } while (empty);
         assert (this.iterator != null);
         assert (this.iterator.hasNext());
-        this.element = this.iterator.next();
         this.valid = true;
         return true;
     }
@@ -49,11 +46,10 @@ public class CoiledIterator<T> implements Iterator<T> {
         if (!findNext()) {
             throw new NoSuchElementException();
         }
-        try {
-            return this.element;
-        } finally {
-            this.valid = false;
-        }
+        final T next = this.iterator.next();
+        this.valid = false;
+        return next;
+        
     }
 
     @Override

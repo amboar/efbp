@@ -32,6 +32,7 @@ import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.schedule.Scheduler;
 import au.id.aj.efbp.transport.ConcurrentConnection;
 import au.id.aj.efbp.transport.Connection;
+import au.id.aj.efbp.util.Bound;
 
 public abstract class AbstractProducer<E> extends AbstractNode implements
         Producer<E>, LifecycleContext, Shutdown {
@@ -40,6 +41,8 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
     private final Taps<E> ingressTaps;
     private final Taps<E> egressTaps;
     private final Connections<E> connections;
+    private final Process.Utils<E, E> processor;
+    private Scheduler scheduler;
 
     protected AbstractProducer(final NodeId id, final Object... content) {
         super(id, content);
@@ -47,6 +50,7 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
         this.ingressTaps = new TapRegistry<>();
         this.egressTaps = new TapRegistry<>();
         this.connections = new ConnectionRegistry<>();
+        this.processor = new Process.Utils<>(this);
     }
 
     @Override
@@ -57,13 +61,19 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
     @Override
     public final void inject(final Packet<E> packet) {
         this.inbound.enqueue(packet);
-        getLookup().lookup(Scheduler.class).schedule(this);
+        if (null == this.scheduler) {
+            this.scheduler = getLookup().lookup(Scheduler.class);
+        }
+        this.scheduler.schedule(this);
     }
 
     @Override
     public final void inject(final Collection<Packet<E>> packets) {
         this.inbound.enqueue(packets);
-        getLookup().lookup(Scheduler.class).schedule(this);
+        if (null == this.scheduler) {
+            this.scheduler = getLookup().lookup(Scheduler.class);
+        }
+        this.scheduler.schedule(this);
     }
 
     @Override
@@ -119,28 +129,33 @@ public abstract class AbstractProducer<E> extends AbstractNode implements
 
     @Override
     public Iterable<Packet<E>> ingress(int max) {
-        final Collection<Packet<E>> packets = Ingress.Utils.drainFrom(
-                this.inbound, max);
-        if (!this.ingressTaps.isEmpty()) {
-            Taps.Utils.acquiesce(this.ingressTaps, packets);
+        if (this.ingressTaps.isEmpty()) {
+            return new Bound<>(this.inbound, max);
         }
+        final Collection<Packet<E>> packets = Ingress.Utils.drainFrom(
+                new Bound<>(this.inbound, max));
+        Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
     }
 
     @Override
     public Collection<Packet<E>> process(final Iterable<Packet<E>> packets) {
-        return Process.Utils.process(this, packets);
+        return this.processor.process(packets);
     }
 
     @Override
     public void process(final Packet<E> inbound,
             final Collection<Packet<E>> outbound) throws ProcessingException {
-        if (Packet.Type.COMMAND.equals(inbound.type())) {
-            inbound.command(this);
-            outbound.add(inbound);
-        } else {
-            assert Packet.Type.DATA.equals(inbound.type());
-            process(inbound.data(), outbound);
+        switch (inbound.type()) {
+            case COMMAND:
+                inbound.command(this);
+                outbound.add(inbound);
+                break;
+            case DATA:
+                process(inbound.data(), outbound);
+                break;
+            default:
+                assert(false);
         }
     }
 

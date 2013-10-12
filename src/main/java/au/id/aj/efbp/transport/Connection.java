@@ -17,6 +17,7 @@ package au.id.aj.efbp.transport;
 import java.util.Iterator;
 
 public interface Connection<T> extends Inbound<T>, Outbound<T> {
+
     /**
      * Wraps a generic iterator to make it destructive, that is, iteration of
      * the collection simultaneously removes elements as they are iterated. In

@@ -1,9 +1,8 @@
 package examples;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +15,6 @@ import au.id.aj.efbp.net.AbstractProducer;
 import au.id.aj.efbp.net.Network;
 import au.id.aj.efbp.net.NetworkBuilder;
 import au.id.aj.efbp.net.ProcessingException;
-import au.id.aj.efbp.node.AbstractNode;
-import au.id.aj.efbp.node.Node;
 import au.id.aj.efbp.node.NodeId;
 import au.id.aj.efbp.node.PliantNodeId;
 import au.id.aj.efbp.pump.DefaultPump;
@@ -30,7 +27,10 @@ import ch.qos.logback.classic.Logger;
 
 public class Throughput {
 
-    public static void main(final String[] args) throws InterruptedException {
+    public static void main(final String[] args) throws InterruptedException,
+            IOException {
+        System.out.println("Press any key to begin");
+        System.in.read();
         ((Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).setLevel(Level.OFF);
         final NetworkBuilder builder = new NetworkBuilder();
         final Network net = builder
@@ -64,10 +64,9 @@ public class Throughput {
         @Override
         public void schedule(final Scheduler scheduler) {
             super.schedule(scheduler);
-            final NodeId id = new PliantNodeId<String>("Source");
-            scheduler.schedule(new AbstractNode(id) {
+            scheduler.scheduleIo(new Runnable() {
                 @Override
-                public Set<Node> execute() {
+                public void run() {
                     final long start = System.nanoTime();
                     int left = maxPackets;
                     int leftBatch = 0;
@@ -83,7 +82,6 @@ public class Throughput {
                     final long end = System.nanoTime();
                     System.out.println("Produced for " + (end - start) + "ns");
                     shutdown();
-                    return Collections.emptySet();
                 }
             });
         }

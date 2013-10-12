@@ -34,6 +34,7 @@ public abstract class AbstractWorker<I, E> extends AbstractNode implements
     private final Taps<I> ingressTaps;
     private final Taps<E> egressTaps;
     private final Connections<E> connections;
+    private final Process.Utils<I, E> processor;
 
     protected AbstractWorker(final NodeId id, final Ports<I> ports,
             final Object... content) {
@@ -42,6 +43,7 @@ public abstract class AbstractWorker<I, E> extends AbstractNode implements
         this.ingressTaps = new TapRegistry<>();
         this.egressTaps = new TapRegistry<>();
         this.connections = new ConnectionRegistry<>();
+        this.processor = new Process.Utils<>(this);
     }
 
     protected final Ports<I> ports() {
@@ -102,34 +104,45 @@ public abstract class AbstractWorker<I, E> extends AbstractNode implements
 
     @Override
     public Iterable<Packet<I>> ingress() {
-        final Collection<Packet<I>> packets = Ingress.Utils.ingress(this.ports);
+        if (this.ingressTaps.isEmpty()) {
+            return Ingress.Utils.ingress(this.ports);
+        }
+        final Collection<Packet<I>> packets =
+            Ingress.Utils.ingressCopy(this.ports);
         Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
     }
 
     @Override
     public Iterable<Packet<I>> ingress(final int max) {
-        final Collection<Packet<I>> packets = Ingress.Utils.ingress(this.ports,
-                max);
+        if (this.ingressTaps.isEmpty()) {
+            return Ingress.Utils.ingress(this.ports, max); 
+        }
+        final Collection<Packet<I>> packets = Ingress.Utils.ingressCopy(
+                this.ports, max);
         Taps.Utils.acquiesce(this.ingressTaps, packets);
         return packets;
     }
 
     @Override
     public Collection<Packet<E>> process(Iterable<Packet<I>> packets) {
-        return Process.Utils.process(this, packets);
+        return this.processor.process(packets);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void process(final Packet<I> inbound,
             final Collection<Packet<E>> outbound) throws ProcessingException {
-        if (Packet.Type.COMMAND.equals(inbound.type())) {
-            inbound.command(this);
-            outbound.add((Packet)inbound);
-        } else {
-            assert Packet.Type.DATA.equals(inbound.type());
-            process(inbound.data(), outbound);
+        switch (inbound.type()) {
+            case COMMAND:
+                inbound.command(this);
+                outbound.add((Packet)inbound);
+                break;
+            case DATA:
+                process(inbound.data(), outbound);
+                break;
+            default:
+                assert(false);
         }
     }
 
